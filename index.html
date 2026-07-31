@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistencia UAS</title>
+    <title>Asistencia UAS | Mtra. Adriana Barrios</title>
 
     <!-- Librería para el escáner QR (Versión estable CDNJS) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
@@ -89,7 +89,7 @@
             border-radius: 32px;
             border: 1.5px solid rgba(255, 255, 255, 0.9);
             box-shadow: var(--sombra);
-            padding: 35px 30px;
+            padding: 35px 30px 25px 30px;
             box-sizing: border-box;
         }
 
@@ -302,7 +302,22 @@
             color: #ffffff;
         }
 
-        /* --- ESTILOS DE IMPRESIÓN (CARTA OFICIAL EN PDF) --- */
+        /* --- FOOTER DE AUTORÍA --- */
+        .app-footer {
+            margin-top: 35px;
+            padding-top: 18px;
+            border-top: 1px dashed var(--dorado-soft);
+            text-align: center;
+            font-size: 13px;
+            color: var(--texto-suave);
+            font-weight: 500;
+        }
+        .app-footer strong {
+            color: var(--vinotinto);
+            font-weight: 700;
+        }
+
+        /* --- ESTILOS DE IMPRESIÓN (PDF INDIVIDUAL) --- */
         #hoja-notificacion { display: none; }
 
         @media print {
@@ -360,7 +375,7 @@
             <div class="panel-controles">
                 <div class="control-group">
                     <label for="materia">Materia</label>
-                    <select id="materia">
+                    <select id="materia" onchange="alCambiarMateria()">
                         <option value="">Cargando materias...</option>
                     </select>
                 </div>
@@ -414,6 +429,11 @@
             </div>
         </div>
 
+        <!-- FOOTER DE AUTORÍA -->
+        <footer class="app-footer">
+            Diseñado y Desarrollado con 💖 por la <strong>Mtra. Adriana Barrios</strong> &bull; Universidad Autónoma de Sinaloa
+        </footer>
+
     </div>
 
     <!-- FORMATO OCULTO PARA IMPRESIÓN DE CARTA OFICIAL -->
@@ -421,7 +441,7 @@
         <div class="header-doc">
             <h2>Universidad Autónoma de Sinaloa</h2>
             <h3>Notificación Oficial de Asistencia y Situación Académica</h3>
-            <p style="font-size: 12px; margin-top: 8px;"><strong>Docente:</strong> Mtra. Adriana Alicia Barrios Rodríguez &nbsp;|&nbsp; <strong>Fecha de expedición:</strong> <span id="doc-fecha"></span></p>
+            <p style="font-size: 12px; margin-top: 8px;"><strong>Docente:</strong> Mtra. Adriana Barrios &nbsp;|&nbsp; <strong>Fecha de expedición:</strong> <span id="doc-fecha"></span></p>
         </div>
 
         <div class="info-box">
@@ -527,6 +547,11 @@
             } catch (error) {
                 console.error("Error al cargar materias:", error);
             }
+        }
+
+        function alCambiarMateria() {
+            // Cada vez que cambias de grupo/materia, la hora se reinicia a la hora actual
+            fijarHoraActual();
         }
 
         // ==========================================
