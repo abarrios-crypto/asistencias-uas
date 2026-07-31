@@ -4,166 +4,404 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asistencia UAS</title>
-    <!-- Librería para el escáner QR -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <!-- Librería para el escáner QR (Versión estable CDNJS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --rosa-bg: #fdf2f4;
+            --card-bg: rgba(255, 248, 249, 0.88);
+            --dorado: #d4af37;
+            --dorado-soft: rgba(212, 175, 55, 0.25);
+            --texto-dark: #4a2e35;
+            --texto-suave: #7a525d;
+            --vinotinto: #6b3e4a;
+            --sombra: 0 12px 35px rgba(180, 100, 120, 0.12);
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #fdf0f2 0%, #faeef0 50%, #f7e2e6 100%);
+            color: var(--texto-dark);
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            text-align: center;
-        }
-
-        /* --- ESTILOS PARA EL MENÚ Y VISTAS --- */
-        .navbar {
+            padding: 30px 15px;
+            min-height: 100vh;
             display: flex;
-            justify-content: space-around;
-            background-color: #003366; /* Azul UAS */
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .nav-btn {
-            background-color: transparent;
-            border: 2px solid #CC9900; /* Dorado UAS */
-            padding: 10px 20px;
-            color: #CC9900;
-            font-weight: bold;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        /* --- CONTROL DE VISTAS (PESTAÑAS) --- */
+        .vista { 
+            display: none; 
+        }
+        .vista-activa { 
+            display: block !important; 
         }
 
-        .nav-btn:hover, .nav-btn.activo {
-            background-color: #CC9900;
-            color: #003366; /* Letra azul al seleccionar */
-        }
-
-        /* Clases para ocultar y mostrar las pantallas */
-        .vista {
-            display: none;
-            padding: 20px;
-        }
-
-        .vista-activa {
-            display: block;
-            animation: fadeIn 0.4s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* --- ESTILOS DEL ESCÁNER Y FORMULARIO --- */
-        select {
-            padding: 10px;
-            font-size: 16px;
-            margin: 15px 0;
-            width: 80%;
-            max-width: 300px;
-            border: 2px solid #003366;
-            border-radius: 5px;
-        }
-
-        #reader {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            background-color: white;
-            border: 3px solid #003366;
-            border-radius: 10px;
+        /* --- MARIPOSAS Y DESTELLOS FLOTANTES --- */
+        .magic-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
             overflow: hidden;
         }
 
+        .butterfly, .sparkle {
+            position: fixed;
+            pointer-events: none;
+            user-select: none;
+            z-index: 9999;
+            animation: vuelaMariposa 9s linear forwards;
+        }
+
+        @keyframes vuelaMariposa {
+            0% {
+                transform: translateY(105vh) translateX(0vw) rotate(0deg);
+                opacity: 0;
+            }
+            15% { opacity: 0.95; }
+            85% { opacity: 0.95; }
+            100% {
+                transform: translateY(-10vh) translateX(8vw) rotate(25deg);
+                opacity: 0;
+            }
+        }
+
+        /* --- TARJETA PRINCIPAL --- */
+        .main-container {
+            position: relative;
+            z-index: 2;
+            max-width: 950px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 32px;
+            border: 1.5px solid rgba(255, 255, 255, 0.9);
+            box-shadow: var(--sombra);
+            padding: 35px 30px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--texto-dark);
+            text-align: center;
+            font-size: 26px;
+            margin: 15px 0 25px 0;
+            letter-spacing: 0.3px;
+        }
+
+        /* --- MENÚ DE NAVEGACIÓN CHIP --- */
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.65);
+            padding: 7px;
+            border-radius: 50px;
+            border: 1px solid var(--dorado-soft);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--texto-suave);
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--texto-dark);
+        }
+
+        .nav-btn.activo {
+            background: linear-gradient(135deg, #7a4654 0%, #4a2e35 100%);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(74, 46, 53, 0.3);
+        }
+
+        /* --- PANEL DE CONTROLES --- */
+        .panel-controles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--dorado-soft);
+            border-radius: 24px;
+            padding: 22px;
+            margin-bottom: 25px;
+            align-items: end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .control-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--texto-suave);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 10px;
+        }
+
+        select, input[type="time"], input[type="text"] {
+            width: 100%;
+            background: #ffffff;
+            border: 1.5px solid var(--dorado-soft);
+            border-radius: 50px !important;
+            padding: 11px 20px;
+            font-size: 14px;
+            color: var(--texto-dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            outline: none;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--dorado);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+        }
+
+        .btn-chip {
+            background: #ffffff;
+            border: 1.5px solid var(--dorado);
+            color: var(--texto-dark);
+            border-radius: 50px;
+            padding: 11px 22px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.15);
+            white-space: nowrap;
+        }
+
+        .btn-chip:hover {
+            background: var(--dorado);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .time-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* --- ESTILOS DEL ESCÁNER Y SUS BOTONES INTERNOS --- */
+        #reader {
+            width: 100%;
+            max-width: 440px;
+            min-height: 280px;
+            margin: 20px auto;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 2px solid var(--dorado-soft);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            background: rgba(255, 255, 255, 0.6);
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* Estilizado aesthetic para los botones internos que genera la librería */
+        #reader button {
+            background: linear-gradient(135deg, #d4af37 0%, #b89228 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 9px 20px !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3) !important;
+            margin: 8px 4px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        #reader button:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.45) !important;
+        }
+
+        #reader a {
+            color: var(--vinotinto) !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+        }
+
         #mensaje {
+            text-align: center;
+            font-weight: 700;
             margin-top: 15px;
-            font-weight: bold;
-            font-size: 18px;
+            font-size: 15px;
+        }
+
+        /* --- ESTILOS DE TABLAS Y BOTÓN PDF --- */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--dorado-soft);
+            margin-top: 15px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: linear-gradient(90deg, #6b3e4a 0%, #522f38 100%);
+            color: #f7e2e6;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 14px 10px;
+            text-transform: uppercase;
+        }
+        td { padding: 12px 10px; border-bottom: 1px solid rgba(232, 180, 188, 0.25); font-size: 14px; text-align: center; }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #d4af37 0%, #b89228 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 11px 24px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35) !important;
+            transition: all 0.3s ease !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin-bottom: 18px !important;
+        }
+
+        .btn-pdf:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5) !important;
+            background: linear-gradient(135deg, #e5be48 0%, #c99e32 100%) !important;
         }
     </style>
 </head>
 <body>
 
-    <!-- MENÚ DE NAVEGACIÓN -->
-    <div class="navbar">
-        <button id="btn-escaner" class="nav-btn activo" onclick="cambiarVista('escaner')">📷 Escáner</button>
-        <button id="btn-reportes" class="nav-btn" onclick="cambiarVista('reportes')">📊 Reportes</button>
+    <div class="magic-container" id="magic-bg"></div>
+
+    <div class="main-container">
+
+        <!-- MENÚ DE NAVEGACIÓN -->
+        <div class="navbar">
+            <button id="btn-escaner" class="nav-btn activo" onclick="cambiarVista('escaner')">📷 Escáner</button>
+            <button id="btn-reportes" class="nav-btn" onclick="cambiarVista('reportes')">📊 Reportes</button>
+        </div>
+
+        <!-- VISTA 1: EL ESCÁNER -->
+        <div id="vista-escaner" class="vista vista-activa">
+            <h2>Control de Asistencia Clases | Adriana Barrios</h2>
+
+            <div class="panel-controles">
+                <div class="control-group">
+                    <label for="materia">Materia</label>
+                    <select id="materia">
+                        <option value="">Cargando materias...</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="hora-inicio">Hora de inicio de la clase</label>
+                    <div class="time-container">
+                        <input type="time" id="hora-inicio" value="08:00">
+                        <button type="button" class="btn-chip" onclick="fijarHoraActual()">
+                            <span>⏰</span> Usar hora actual
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CÁMARA ESCÁNER Y MENSAJES -->
+            <div id="reader"></div>
+            <div id="mensaje"></div>
+        </div>
+
+        <!-- VISTA 2: LOS REPORTES -->
+        <div id="vista-reportes" class="vista">
+            <h2>Panel de Asistencia y Reportes</h2>
+
+            <button type="button" class="btn-pdf" onclick="descargarPDF()">
+                📄 Descargar Reporte PDF
+            </button>
+
+            <div style="margin: 15px 0;">
+                <label for="filtro-materia" style="font-weight: bold; color: var(--texto-suave);">Filtrar por Materia / Grupo:</label><br>
+                <select id="filtro-materia" onchange="filtrarReporte()" style="padding: 8px; font-size: 14px; margin-top: 5px; width: 100%; max-width: 400px;">
+                    <option value="TODAS">-- Mostrar Todas las Materias --</option>
+                </select>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Matrícula</th>
+                            <th>Nombre</th>
+                            <th>Materia</th>
+                            <th>Asist.</th>
+                            <th>Ret.</th>
+                            <th>Faltas</th>
+                            <th>Just.</th>
+                            <th>% Asist.</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-reporte">
+                        <!-- Se llena dinámicamente mediante JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
-
-    <!-- VISTA 1: EL ESCÁNER -->
-    <div id="vista-escaner" class="vista vista-activa">
-        <h2 style="color: #003366;">Control de Asistencia UAS</h2>
-        
-        <label for="materia" style="font-weight: bold; color: #333;">Selecciona la Materia:</label><br>
-        <select id="materia">
-            <option value="">Cargando materias...</option>
-        </select>
-<br><br>
-<label for="hora-inicio" style="font-weight: bold; color: #333;">Hora de inicio de la clase:</label><br>
-<div style="display: flex; gap: 8px; align-items: center; margin-top: 5px;">
-    <input type="time" id="hora-inicio" value="08:00" style="padding: 6px; font-size: 14px;">
-    <button type="button" onclick="fijarHoraActual()" style="padding: 6px 12px; cursor: pointer; background-color: #e0e0e0; border: 1px solid #ccc; border-radius: 4px;">
-        🕒 Usar hora actual
-    </button>
-</div>
-        <div id="reader"></div>
-        <div id="mensaje"></div>
-    </div>
-
-    <!-- VISTA 2: LOS REPORTES -->
-<!-- VISTA 2: LOS REPORTES -->
-<div id="vista-reportes" class="vista">
-    <h2 style="color: #003366;">Panel de Asistencia y Reportes</h2>
-
-    <!-- Botón para la futura descarga del PDF -->
-    <button style="background-color: #d9534f; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 15px; font-weight: bold; font-size: 16px;">
-        📄 Descargar Reporte PDF
-    </button>
-
-    <!-- Filtro por Materia / Grupo -->
-    <div style="margin: 15px 0;">
-        <label for="filtro-materia" style="font-weight: bold; color: #333;">Filtrar por Materia / Grupo:</label><br>
-        <select id="filtro-materia" onchange="filtrarReporte()" style="padding: 8px; font-size: 14px; margin-top: 5px; width: 100%; max-width: 400px;">
-            <option value="TODAS">-- Mostrar Todas las Materias --</option>
-        </select>
-    </div>
-
-    <!-- Tabla completa con las 9 columnas -->
-    <div style="overflow-x: auto;">
-        <table border="1" style="width:100%; text-align:center; border-collapse:collapse; margin-top:10px;">
-            <thead>
-                <tr style="background-color: #003366; color: white;">
-                    <th style="padding: 8px;">Matrícula</th>
-                    <th style="padding: 8px;">Nombre</th>
-                    <th style="padding: 8px;">Materia</th>
-                    <th style="padding: 8px;">Asist.</th>
-                    <th style="padding: 8px;">Ret.</th>
-                    <th style="padding: 8px;">Faltas</th>
-                    <th style="padding: 8px;">Just.</th>
-                    <th style="padding: 8px;">% Asist.</th>
-                    <th style="padding: 8px;">Estado</th>
-                </tr>
-            </thead>
-            <tbody id="tbody-reporte">
-                <!-- Se llena dinámicamente mediante JS -->
-            </tbody>
-        </table>
-    </div>
-</div>
 
     <script>
         // ==========================================
-        // 1. CONFIGURACIÓN (¡PON TU URL AQUÍ!)
+        // 1. CONFIGURACIÓN
         // ==========================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzgskaZuX8AF7ne7zn0cWsx-lh6BNn9l8E5FLUd8KOoBDa_CDz0SKShc5eXcsa3GyH/exec"; 
 
         // ==========================================
         // 2. NAVEGACIÓN ENTRE VISTAS
         // ==========================================
-function cambiarVista(vistaDestino) {
+        function cambiarVista(vistaDestino) {
             document.getElementById('vista-escaner').classList.remove('vista-activa');
             document.getElementById('vista-reportes').classList.remove('vista-activa');
             document.getElementById('btn-escaner').classList.remove('activo');
@@ -175,8 +413,6 @@ function cambiarVista(vistaDestino) {
             } else if (vistaDestino === 'reportes') {
                 document.getElementById('vista-reportes').classList.add('vista-activa');
                 document.getElementById('btn-reportes').classList.add('activo');
-                
-                // ¡AQUÍ ESTÁ LA MAGIA! Cargamos la tabla al abrir la pestaña
                 cargarDatosReporte();
             }
         }
@@ -208,128 +444,208 @@ function cambiarVista(vistaDestino) {
         // 4. LÓGICA DEL ESCÁNER QR
         // ==========================================
         let escaneando = false;
+        let html5QrcodeScanner = null;
 
         function onScanSuccess(decodedText, decodedResult) {
-            if (escaneando) return; // Bloquear lectura múltiple
+            if (escaneando) return;
             
             const materiaSeleccionada = document.getElementById("materia").value;
             const mensajeDiv = document.getElementById("mensaje");
 
             if (!materiaSeleccionada) {
-                mensajeDiv.style.color = "red";
+                mensajeDiv.style.color = "#d9534f";
                 mensajeDiv.innerText = "⚠️ Por favor, selecciona una materia primero.";
                 return;
             }
 
             escaneando = true;
-            mensajeDiv.style.color = "#003366";
+            mensajeDiv.style.color = "#4a2e35";
             mensajeDiv.innerText = "⏳ Registrando matrícula " + decodedText + "...";
 
-            // Enviar datos a Google Sheets y procesar respuesta real
-// Leer la hora del selector dinámico (o 08:00 por defecto)
-const horaInicioInput = document.getElementById("hora-inicio") ? document.getElementById("hora-inicio").value : "08:00";
+            const horaInicioInput = document.getElementById("hora-inicio") ? document.getElementById("hora-inicio").value : "08:00";
+            const url = `${SCRIPT_URL}?accion=registrarAsistencia&matricula=${encodeURIComponent(decodedText)}&materia=${encodeURIComponent(materiaSeleccionada)}&horaInicio=${encodeURIComponent(horaInicioInput)}`;
 
-const url = `${SCRIPT_URL}?accion=registrarAsistencia&matricula=${encodeURIComponent(decodedText)}&materia=${encodeURIComponent(materiaSeleccionada)}&horaInicio=${encodeURIComponent(horaInicioInput)}`;
+            fetch(url)
+            .then(response => response.json())
+            .then(resultado => {
+                if (resultado.status === 'success') {
+                    mensajeDiv.style.color = "#2e7d32";
+                    mensajeDiv.innerText = `✅ ${resultado.estatusRegistro.toUpperCase()}: ${resultado.alumno}`;
+                    if (typeof cargarDatosReporte === 'function') {
+                        cargarDatosReporte();
+                    }
+                } else {
+                    mensajeDiv.style.color = "#d9534f";
+                    mensajeDiv.innerText = `⚠️ ${resultado.mensaje}`;
+                }
 
-    fetch(url)
-    .then(response => response.json())
-    .then(resultado => {
-        if (resultado.status === 'success') {
-            mensajeDiv.style.color = "green";
-            mensajeDiv.innerText = `✅ ${resultado.estatusRegistro.toUpperCase()}: ${resultado.alumno}`;
-            
-            // Si la función de refrescar reportes existe, la llamamos para actualizar la tabla
-            if (typeof cargarDatosReporte === 'function') {
-                cargarDatosReporte();
-            }
-        } else {
-            mensajeDiv.style.color = "red";
-            mensajeDiv.innerText = `⚠️ ${resultado.mensaje}`;
+                setTimeout(() => {
+                    mensajeDiv.innerText = "";
+                    escaneando = false;
+                }, 3000);
+            })
+            .catch(error => {
+                console.error("Error al registrar:", error);
+                mensajeDiv.style.color = "#d9534f";
+                mensajeDiv.innerText = "❌ Error de conexión con Google Sheets.";
+                escaneando = false;
+            });
         }
-
-        // Reiniciar el lector después de 3 segundos
-        setTimeout(() => {
-            mensajeDiv.innerText = "";
-            escaneando = false;
-        }, 3000);
-    })
-    .catch(error => {
-        console.error("Error al registrar:", error);
-        mensajeDiv.style.color = "red";
-        mensajeDiv.innerText = "❌ Error de conexión con Google Sheets.";
-        escaneando = false;
-    });
-    }
 
         function onScanFailure(error) {
-            // Función requerida por la librería, la dejamos vacía para no saturar procesos
+            // Silencioso
         }
 
-        // Inicializar todo al cargar la página
-        window.onload = function() {
-            cargarMaterias();
-            
-            let html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader",
-                { fps: 10, qrbox: {width: 250, height: 250} },
-                false // MODO SILENCIOSO EN LA CONSOLA
-            );
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-        };
-        // ==========================================
-        // 5. CARGAR Y DIBUJAR REPORTES
-        // ==========================================
-        async function cargarDatosReporte() {
-            const contenedor = document.getElementById("contenedor-tabla");
-            contenedor.innerHTML = "<i>Cargando datos desde Google Sheets... ⏳</i>";
-            
+        function fijarHoraActual() {
+            const inputHora = document.getElementById("hora-inicio");
+            if (!inputHora) return;
+            const ahora = new Date();
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            inputHora.value = `${horas}:${minutos}`;
+        }
+
+        // INICIALIZADOR DE CÁMARA
+        function encenderEscaner() {
+            if (html5QrcodeScanner !== null) return; // Ya se inició
+
+            if (typeof Html5QrcodeScanner === 'undefined') {
+                setTimeout(encenderEscaner, 200);
+                return;
+            }
+
             try {
-                const response = await fetch(SCRIPT_URL + "?accion=obtenerReporte");
-                const datos = await response.json();
-                
-                // Creamos el diseño de la tabla
-                let tablaHTML = `<table style="width:100%; border-collapse: collapse; margin-top: 15px; background-color: white;">
-                    <tr style="background-color: #003366; color: white;">
-                        <th style="padding: 10px; border: 1px solid #ddd;">Matrícula</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Nombre</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Asist.</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Faltas</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Estado</th>
-                    </tr>`;
-                    
-                datos.forEach(alumno => {
-                    // Lógica visual: Si tiene 3 o más faltas, se pinta de rojo
-                    let enRiesgo = alumno.faltas >= 3;
-                    let colorEstado = enRiesgo ? "color: #d9534f; font-weight: bold;" : "color: #28a745;";
-                    let textoEstado = enRiesgo ? "⚠️ En Riesgo" : "Regular";
-                    
-                    tablaHTML += `<tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${alumno.matricula}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${alumno.nombre}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${alumno.asistencias}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd; ${colorEstado}">${alumno.faltas}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd; ${colorEstado}">${textoEstado}</td>
-                    </tr>`;
-                });
-                
-                tablaHTML += "</table>";
-                contenedor.innerHTML = tablaHTML;
-                
-            } catch (error) {
-                console.error(error);
-                contenedor.innerHTML = "<i style='color: red;'>❌ Error al cargar los reportes. Revisa la conexión.</i>";
+                html5QrcodeScanner = new Html5QrcodeScanner(
+                    "reader",
+                    { 
+                        fps: 10, 
+                        qrbox: { width: 220, height: 220 },
+                        rememberLastUsedCamera: true
+                    },
+                    false
+                );
+                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            } catch (e) {
+                console.error("Error al iniciar escáner:", e);
             }
         }
-        // Función para tomar la hora del dispositivo
-function fijarHoraActual() {
-    const ahora = new Date();
-    const horas = String(ahora.getHours()).padStart(2, '0');
-    const minutos = String(ahora.getMinutes()).padStart(2, '0');
-    document.getElementById("hora-inicio").value = `${horas}:${minutos}`;
-}
 
-// Opcional: que se auto-asigne la hora actual al abrir la página
-window.addEventListener('DOMContentLoaded', fijarHoraActual);
+        // ==========================================
+        // 5. REPORTES
+        // ==========================================
+        let datosReporteGlobal = [];
+
+        async function cargarDatosReporte() {
+            const tbody = document.getElementById("tbody-reporte");
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="9" style="padding: 15px;">⏳ Cargando datos desde Google Sheets...</td></tr>`;
+            }
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?accion=obtenerReporte`);
+                datosReporteGlobal = await response.json();
+                poblarFiltroMaterias(datosReporteGlobal);
+                filtrarReporte();
+            } catch (error) {
+                console.error("Error al cargar reporte:", error);
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="9" style="color: red; padding: 15px;">❌ Error al conectar con Google Sheets.</td></tr>`;
+                }
+            }
+        }
+
+        function poblarFiltroMaterias(datos) {
+            const selectFiltro = document.getElementById("filtro-materia");
+            if (!selectFiltro) return;
+
+            const materiasUnicas = [...new Set(datos.map(item => item.materia))].filter(Boolean);
+            selectFiltro.innerHTML = '<option value="TODAS">-- Mostrar Todas las Materias --</option>';
+            
+            materiasUnicas.forEach(materia => {
+                const option = document.createElement("option");
+                option.value = materia;
+                option.textContent = materia;
+                selectFiltro.appendChild(option);
+            });
+        }
+
+        function filtrarReporte() {
+            const selectFiltro = document.getElementById("filtro-materia");
+            const tbody = document.getElementById("tbody-reporte");
+            if (!tbody || !selectFiltro) return;
+            
+            const materiaSeleccionada = selectFiltro.value;
+            tbody.innerHTML = "";
+
+            const datosFiltrados = materiaSeleccionada === "TODAS" 
+                ? datosReporteGlobal 
+                : datosReporteGlobal.filter(item => item.materia === materiaSeleccionada);
+
+            if (datosFiltrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="padding: 15px;">No hay alumnos registrados en esta materia.</td></tr>`;
+                return;
+            }
+
+            datosFiltrados.forEach(alumno => {
+                const tr = document.createElement("tr");
+                const colorEstado = alumno.alerta === "Riesgo" ? "color: red; font-weight: bold;" : "color: green;";
+
+                tr.innerHTML = `
+                    <td>${alumno.matricula}</td>
+                    <td style="text-align: left;">${alumno.nombre}</td>
+                    <td>${alumno.materia || '-'}</td>
+                    <td>${alumno.asistencias}</td>
+                    <td>${alumno.retardos}</td>
+                    <td>${alumno.faltas}</td>
+                    <td>${alumno.justificados}</td>
+                    <td>${alumno.porcentaje}</td>
+                    <td style="${colorEstado}">${alumno.alerta}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function descargarPDF() {
+            window.print();
+        }
+
+        // ==========================================
+        // 6. ANIMACIÓN DE MARIPOSAS & ARRANQUE GLOBAL
+        // ==========================================
+        (function arrancarMariposas() {
+            function crearMariposa() {
+                var container = document.getElementById('magic-bg');
+                if (!container) return;
+
+                var el = document.createElement('div');
+                var iconos = ['🦋', '✨', '🌸', '💖', '🧪', '🔬', '🥼', '💕'];
+                var esMariposa = Math.random() > 0.4;
+                
+                el.className = esMariposa ? 'butterfly' : 'sparkle';
+                el.innerText = iconos[Math.floor(Math.random() * iconos.length)];
+                el.style.left = (Math.random() * 92 + 3) + 'vw';
+                el.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                el.style.fontSize = (Math.random() * 10 + 18) + 'px';
+                
+                container.appendChild(el);
+
+                setTimeout(function() {
+                    el.remove();
+                }, 9000);
+            }
+
+            for (var i = 0; i < 3; i++) {
+                setTimeout(crearMariposa, i * 300);
+            }
+            setInterval(crearMariposa, 1100);
+        })();
+
+        // INICIALIZAR AL CARGAR COMPLETAMENTE LA PÁGINA
+        window.addEventListener('DOMContentLoaded', () => {
+            fijarHoraActual();
+            cargarMaterias();
+            encenderEscaner();
+        });
     </script>
 </body>
 </html>
