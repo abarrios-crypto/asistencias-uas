@@ -1,112 +1,238 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { 
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-      background-color: #f4f6f9; color: #333; text-align: center; 
-    }
-    .header {
-      background-color: #002855; color: #ffffff; padding: 25px 15px;
-      border-bottom: 6px solid #FFC72C; margin-bottom: 25px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    .header h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
-    .header h2 { font-size: 1.1rem; font-weight: 500; color: #FFC72C; margin-bottom: 10px; }
-    .header h3 { font-size: 0.95rem; font-weight: 300; opacity: 0.9; }
-    .container { padding: 0 20px 40px 20px; max-width: 550px; margin: 0 auto; }
-    select { 
-      padding: 12px; width: 100%; font-size: 16px; border: 1px solid #ccc;
-      border-radius: 6px; margin-bottom: 25px; background-color: #ffffff;
-      color: #002855; font-weight: 600;
-    }
-    #reader { 
-      width: 100%; border-radius: 8px; overflow: hidden; 
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1); background: #ffffff; border: 2px solid #002855;
-    }
-    #status { 
-      margin-top: 25px; font-weight: bold; font-size: 1.2rem; padding: 15px; 
-      border-radius: 8px; min-height: 60px; display: flex; align-items: center; justify-content: center;
-    }
-    .default { background-color: #e9ecef; color: #495057; border: 1px solid #ced4da; }
-    .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-    .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencia UAS</title>
+    <!-- Librería para el escáner QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        /* --- ESTILOS PARA EL MENÚ Y VISTAS --- */
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            background-color: #003366; /* Azul UAS */
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn {
+            background-color: transparent;
+            border: 2px solid #CC9900; /* Dorado UAS */
+            padding: 10px 20px;
+            color: #CC9900;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover, .nav-btn.activo {
+            background-color: #CC9900;
+            color: #003366; /* Letra azul al seleccionar */
+        }
+
+        /* Clases para ocultar y mostrar las pantallas */
+        .vista {
+            display: none;
+            padding: 20px;
+        }
+
+        .vista-activa {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- ESTILOS DEL ESCÁNER Y FORMULARIO --- */
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 15px 0;
+            width: 80%;
+            max-width: 300px;
+            border: 2px solid #003366;
+            border-radius: 5px;
+        }
+
+        #reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: white;
+            border: 3px solid #003366;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #mensaje {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Universidad Autónoma de Sinaloa</h1>
-    <h2>Facultad de Ciencias Naturales y Exactas</h2>
-    <h3>Docente: M.C. Adriana Alicia Barrios Rodríguez</h3>
-  </div>
-  
-  <div class="container">
-    <select id="materiaSelect">
-      <option value="">Cargando materias...</option>
-    </select>
-    <div id="reader"></div>
-    <div id="status" class="default">Esperando escaneo...</div>
-  </div>
+    <!-- MENÚ DE NAVEGACIÓN -->
+    <div class="navbar">
+        <button id="btn-escaner" class="nav-btn activo" onclick="cambiarVista('escaner')">📷 Escáner</button>
+        <button id="btn-reportes" class="nav-btn" onclick="cambiarVista('reportes')">📊 Reportes</button>
+    </div>
 
-  <script>
-    // --- REEMPLAZA ESTO CON LA URL DE TU APPS SCRIPT ---
-    const API_URL = "https://script.google.com/a/macros/uas.edu.mx/s/AKfycbz8k_25kznunSFDekyeQudvELT7cZn-tdyCpo5JT7wHmn9Y8YS7CYBERR1IpvUColrt/exec";
-    // ---------------------------------------------------
+    <!-- VISTA 1: EL ESCÁNER -->
+    <div id="vista-escaner" class="vista vista-activa">
+        <h2 style="color: #003366;">Control de Asistencia UAS</h2>
+        
+        <label for="materia" style="font-weight: bold; color: #333;">Selecciona la Materia:</label><br>
+        <select id="materia">
+            <option value="">Cargando materias...</option>
+        </select>
 
-    fetch(API_URL + "?accion=obtenerMaterias")
-      .then(res => res.json())
-      .then(materias => {
-        const select = document.getElementById('materiaSelect');
-        select.innerHTML = '<option value="">-- Selecciona tu clase --</option>';
-        materias.forEach(m => {
-          let opt = document.createElement('option');
-          opt.value = m; opt.innerHTML = m; select.appendChild(opt);
-        });
-      }).catch(err => console.error("Error conectando con la base de datos"));
+        <div id="reader"></div>
+        <div id="mensaje"></div>
+    </div>
 
-    function onScanSuccess(decodedText, decodedResult) {
-      const materia = document.getElementById('materiaSelect').value;
-      const statusDiv = document.getElementById('status');
+    <!-- VISTA 2: LOS REPORTES -->
+    <div id="vista-reportes" class="vista">
+        <h2 style="color: #003366;">Panel de Asistencia y Reportes</h2>
+        <p>Aquí se generará la tabla de estudiantes y las alertas de riesgo.</p>
+        
+        <!-- Botón preparado para la futura descarga del PDF -->
+        <button style="background-color: #d9534f; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 15px; font-weight: bold; font-size: 16px;">
+            📄 Descargar Reporte PDF
+        </button>
 
-      if (!materia) {
-        statusDiv.innerText = '⚠️ Primero selecciona una materia';
-        statusDiv.className = 'error'; return;
-      }
+        <!-- Contenedor donde inyectaremos los datos de Google Sheets -->
+        <div id="contenedor-tabla">
+            <i>Cargando datos de los estudiantes... (Próximamente)</i>
+        </div>
+    </div>
 
-      statusDiv.innerText = 'Registrando...';
-      statusDiv.className = 'warning';
-      html5QrcodeScanner.pause();
+    <script>
+        // ==========================================
+        // 1. CONFIGURACIÓN (¡PON TU URL AQUÍ!)
+        // ==========================================
+        const SCRIPT_URL = "https://script.google.com/a/macros/uas.edu.mx/s/AKfycbz8k_25kznunSFDekyeQudvELT7cZn-tdyCpo5JT7wHmn9Y8YS7CYBERR1IpvUColrt/exec"; 
 
-      const urlRegistro = API_URL + "?accion=registrar&id=" + encodeURIComponent(decodedText) + "&materia=" + encodeURIComponent(materia);
-      
-      fetch(urlRegistro)
-        .then(res => res.json())
-        .then(data => {
-          const resTexto = data.mensaje;
-          statusDiv.innerText = resTexto;
-          statusDiv.className = resTexto.includes('Retardo') ? 'warning' : (resTexto.includes('Error') ? 'error' : 'success');
-          
-          setTimeout(() => {
-            statusDiv.innerText = 'Esperando escaneo...';
-            statusDiv.className = 'default';
-            html5QrcodeScanner.resume();
-          }, 2500);
-        })
-        .catch(err => {
-          statusDiv.innerText = 'Error de conexión.';
-          statusDiv.className = 'error';
-          setTimeout(() => html5QrcodeScanner.resume(), 2500);
-        });
-    }
+        // ==========================================
+        // 2. NAVEGACIÓN ENTRE VISTAS
+        // ==========================================
+        function cambiarVista(vistaDestino) {
+            // Ocultamos ambas vistas
+            document.getElementById('vista-escaner').classList.remove('vista-activa');
+            document.getElementById('vista-reportes').classList.remove('vista-activa');
+            
+            // Quitamos el color de selección de ambos botones
+            document.getElementById('btn-escaner').classList.remove('activo');
+            document.getElementById('btn-reportes').classList.remove('activo');
+            
+            // Activamos solo la vista y el botón seleccionados
+            if(vistaDestino === 'escaner') {
+                document.getElementById('vista-escaner').classList.add('vista-activa');
+                document.getElementById('btn-escaner').classList.add('activo');
+            } else if (vistaDestino === 'reportes') {
+                document.getElementById('vista-reportes').classList.add('vista-activa');
+                document.getElementById('btn-reportes').classList.add('activo');
+            }
+        }
 
-    let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
-    html5QrcodeScanner.render(onScanSuccess, () => {});
-  </script>
+        // ==========================================
+        // 3. OBTENER MATERIAS DEL EXCEL
+        // ==========================================
+        async function cargarMaterias() {
+            try {
+                const response = await fetch(SCRIPT_URL + "?accion=obtenerMaterias");
+                const materias = await response.json();
+                
+                const selectMateria = document.getElementById("materia");
+                selectMateria.innerHTML = '<option value="">-- Elige una materia --</option>';
+                
+                materias.forEach(materia => {
+                    const option = document.createElement("option");
+                    option.value = materia;
+                    option.textContent = materia;
+                    selectMateria.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error al cargar materias:", error);
+                document.getElementById("materia").innerHTML = '<option value="">Error al cargar materias</option>';
+            }
+        }
+
+        // ==========================================
+        // 4. LÓGICA DEL ESCÁNER QR
+        // ==========================================
+        let escaneando = false;
+
+        function onScanSuccess(decodedText, decodedResult) {
+            if (escaneando) return; // Bloquear lectura múltiple
+            
+            const materiaSeleccionada = document.getElementById("materia").value;
+            const mensajeDiv = document.getElementById("mensaje");
+
+            if (!materiaSeleccionada) {
+                mensajeDiv.style.color = "red";
+                mensajeDiv.innerText = "⚠️ Por favor, selecciona una materia primero.";
+                return;
+            }
+
+            escaneando = true;
+            mensajeDiv.style.color = "#003366";
+            mensajeDiv.innerText = "⏳ Registrando matrícula " + decodedText + "...";
+
+            // Enviar datos al Google Sheet (POST sin CORS)
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "accion=registrar&matricula=" + encodeURIComponent(decodedText) + "&materia=" + encodeURIComponent(materiaSeleccionada)
+            })
+            .then(() => {
+                mensajeDiv.style.color = "green";
+                mensajeDiv.innerText = "✅ Registro exitoso: " + decodedText;
+                
+                // Reiniciar el lector después de 3 segundos
+                setTimeout(() => {
+                    mensajeDiv.innerText = "";
+                    escaneando = false;
+                }, 3000);
+            })
+            .catch(error => {
+                mensajeDiv.style.color = "red";
+                mensajeDiv.innerText = "❌ Error de conexión. Intenta de nuevo.";
+                escaneando = false;
+            });
+        }
+
+        function onScanFailure(error) {
+            // Función requerida por la librería, la dejamos vacía para no saturar procesos
+        }
+
+        // Inicializar todo al cargar la página
+        window.onload = function() {
+            cargarMaterias();
+            
+            let html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader",
+                { fps: 10, qrbox: {width: 250, height: 250} },
+                false // MODO SILENCIOSO EN LA CONSOLA
+            );
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        };
+    </script>
 </body>
 </html>
