@@ -193,29 +193,37 @@ function cambiarVista(vistaDestino) {
             mensajeDiv.style.color = "#003366";
             mensajeDiv.innerText = "⏳ Registrando matrícula " + decodedText + "...";
 
-            // Enviar datos al Google Sheet (POST sin CORS)
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: "accion=registrar&matricula=" + encodeURIComponent(decodedText) + "&materia=" + encodeURIComponent(materiaSeleccionada)
-            })
-            .then(() => {
-                mensajeDiv.style.color = "green";
-                mensajeDiv.innerText = "✅ Registro exitoso: " + decodedText;
-                
-                // Reiniciar el lector después de 3 segundos
-                setTimeout(() => {
-                    mensajeDiv.innerText = "";
-                    escaneando = false;
-                }, 3000);
-            })
-            .catch(error => {
-                mensajeDiv.style.color = "red";
-                mensajeDiv.innerText = "❌ Error de conexión. Intenta de nuevo.";
-                escaneando = false;
-            });
+            // Enviar datos a Google Sheets y procesar respuesta real
+    const url = `${SCRIPT_URL}?accion=registrarAsistencia&matricula=${encodeURIComponent(decodedText)}&materia=${encodeURIComponent(materiaSeleccionada)}&horaInicio=08:00`;
+
+    fetch(url)
+    .then(response => response.json())
+    .then(resultado => {
+        if (resultado.status === 'success') {
+            mensajeDiv.style.color = "green";
+            mensajeDiv.innerText = `✅ ${resultado.estatusRegistro.toUpperCase()}: ${resultado.alumno}`;
+            
+            // Si la función de refrescar reportes existe, la llamamos para actualizar la tabla
+            if (typeof cargarDatosReporte === 'function') {
+                cargarDatosReporte();
+            }
+        } else {
+            mensajeDiv.style.color = "red";
+            mensajeDiv.innerText = `⚠️ ${resultado.mensaje}`;
         }
+
+        // Reiniciar el lector después de 3 segundos
+        setTimeout(() => {
+            mensajeDiv.innerText = "";
+            escaneando = false;
+        }, 3000);
+    })
+    .catch(error => {
+        console.error("Error al registrar:", error);
+        mensajeDiv.style.color = "red";
+        mensajeDiv.innerText = "❌ Error de conexión con Google Sheets.";
+        escaneando = false;
+    });
 
         function onScanFailure(error) {
             // Función requerida por la librería, la dejamos vacía para no saturar procesos
