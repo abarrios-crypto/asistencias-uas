@@ -101,26 +101,58 @@
         <select id="materia">
             <option value="">Cargando materias...</option>
         </select>
-
+<br><br>
+<label for="hora-inicio" style="font-weight: bold; color: #333;">Hora de inicio de la clase:</label><br>
+<div style="display: flex; gap: 8px; align-items: center; margin-top: 5px;">
+    <input type="time" id="hora-inicio" value="08:00" style="padding: 6px; font-size: 14px;">
+    <button type="button" onclick="fijarHoraActual()" style="padding: 6px 12px; cursor: pointer; background-color: #e0e0e0; border: 1px solid #ccc; border-radius: 4px;">
+        🕒 Usar hora actual
+    </button>
+</div>
         <div id="reader"></div>
         <div id="mensaje"></div>
     </div>
 
     <!-- VISTA 2: LOS REPORTES -->
-    <div id="vista-reportes" class="vista">
-        <h2 style="color: #003366;">Panel de Asistencia y Reportes</h2>
-        <p>Aquí se generará la tabla de estudiantes y las alertas de riesgo.</p>
-        
-        <!-- Botón preparado para la futura descarga del PDF -->
-        <button style="background-color: #d9534f; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 15px; font-weight: bold; font-size: 16px;">
-            📄 Descargar Reporte PDF
-        </button>
+<!-- VISTA 2: LOS REPORTES -->
+<div id="vista-reportes" class="vista">
+    <h2 style="color: #003366;">Panel de Asistencia y Reportes</h2>
 
-        <!-- Contenedor donde inyectaremos los datos de Google Sheets -->
-        <div id="contenedor-tabla">
-            <i>Cargando datos de los estudiantes... (Próximamente)</i>
-        </div>
+    <!-- Botón para la futura descarga del PDF -->
+    <button style="background-color: #d9534f; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 15px; font-weight: bold; font-size: 16px;">
+        📄 Descargar Reporte PDF
+    </button>
+
+    <!-- Filtro por Materia / Grupo -->
+    <div style="margin: 15px 0;">
+        <label for="filtro-materia" style="font-weight: bold; color: #333;">Filtrar por Materia / Grupo:</label><br>
+        <select id="filtro-materia" onchange="filtrarReporte()" style="padding: 8px; font-size: 14px; margin-top: 5px; width: 100%; max-width: 400px;">
+            <option value="TODAS">-- Mostrar Todas las Materias --</option>
+        </select>
     </div>
+
+    <!-- Tabla completa con las 9 columnas -->
+    <div style="overflow-x: auto;">
+        <table border="1" style="width:100%; text-align:center; border-collapse:collapse; margin-top:10px;">
+            <thead>
+                <tr style="background-color: #003366; color: white;">
+                    <th style="padding: 8px;">Matrícula</th>
+                    <th style="padding: 8px;">Nombre</th>
+                    <th style="padding: 8px;">Materia</th>
+                    <th style="padding: 8px;">Asist.</th>
+                    <th style="padding: 8px;">Ret.</th>
+                    <th style="padding: 8px;">Faltas</th>
+                    <th style="padding: 8px;">Just.</th>
+                    <th style="padding: 8px;">% Asist.</th>
+                    <th style="padding: 8px;">Estado</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-reporte">
+                <!-- Se llena dinámicamente mediante JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
 
     <script>
         // ==========================================
@@ -194,7 +226,10 @@ function cambiarVista(vistaDestino) {
             mensajeDiv.innerText = "⏳ Registrando matrícula " + decodedText + "...";
 
             // Enviar datos a Google Sheets y procesar respuesta real
-    const url = `${SCRIPT_URL}?accion=registrarAsistencia&matricula=${encodeURIComponent(decodedText)}&materia=${encodeURIComponent(materiaSeleccionada)}&horaInicio=08:00`;
+// Leer la hora del selector dinámico (o 08:00 por defecto)
+const horaInicioInput = document.getElementById("hora-inicio") ? document.getElementById("hora-inicio").value : "08:00";
+
+const url = `${SCRIPT_URL}?accion=registrarAsistencia&matricula=${encodeURIComponent(decodedText)}&materia=${encodeURIComponent(materiaSeleccionada)}&horaInicio=${encodeURIComponent(horaInicioInput)}`;
 
     fetch(url)
     .then(response => response.json())
@@ -285,6 +320,16 @@ function cambiarVista(vistaDestino) {
                 contenedor.innerHTML = "<i style='color: red;'>❌ Error al cargar los reportes. Revisa la conexión.</i>";
             }
         }
+        // Función para tomar la hora del dispositivo
+function fijarHoraActual() {
+    const ahora = new Date();
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    document.getElementById("hora-inicio").value = `${horas}:${minutos}`;
+}
+
+// Opcional: que se auto-asigne la hora actual al abrir la página
+window.addEventListener('DOMContentLoaded', fijarHoraActual);
     </script>
 </body>
 </html>
