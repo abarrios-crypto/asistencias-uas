@@ -81,7 +81,7 @@
         .main-container {
             position: relative;
             z-index: 2;
-            max-width: 950px;
+            max-width: 1000px;
             width: 100%;
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -219,7 +219,7 @@
             align-items: center;
         }
 
-        /* --- ESTILOS DEL ESCÁNER Y SUS BOTONES INTERNOS --- */
+        /* --- ESCÁNER --- */
         #reader {
             width: 100%;
             max-width: 440px;
@@ -234,7 +234,6 @@
             box-sizing: border-box;
         }
 
-        /* Estilizado aesthetic para los botones internos que genera la librería */
         #reader button {
             background: linear-gradient(135deg, #d4af37 0%, #b89228 100%) !important;
             color: #ffffff !important;
@@ -247,18 +246,6 @@
             cursor: pointer !important;
             box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3) !important;
             margin: 8px 4px !important;
-            transition: all 0.3s ease !important;
-        }
-
-        #reader button:hover {
-            transform: translateY(-1px) !important;
-            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.45) !important;
-        }
-
-        #reader a {
-            color: var(--vinotinto) !important;
-            font-weight: 600 !important;
-            text-decoration: none !important;
         }
 
         #mensaje {
@@ -268,7 +255,7 @@
             font-size: 15px;
         }
 
-        /* --- ESTILOS DE TABLAS Y BOTÓN PDF --- */
+        /* --- TABLA Y ESTADOS --- */
         .table-responsive {
             overflow-x: auto;
             border-radius: 20px;
@@ -288,28 +275,68 @@
         }
         td { padding: 12px 10px; border-bottom: 1px solid rgba(232, 180, 188, 0.25); font-size: 14px; text-align: center; }
 
-        .btn-pdf {
-            background: linear-gradient(135deg, #d4af37 0%, #b89228 100%) !important;
-            color: #ffffff !important;
-            border: none !important;
-            border-radius: 50px !important;
-            padding: 11px 24px !important;
-            font-size: 14px !important;
-            font-weight: 600 !important;
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            cursor: pointer !important;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35) !important;
-            transition: all 0.3s ease !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            margin-bottom: 18px !important;
+        .badge-estado {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            display: inline-block;
+        }
+        .badge-regular { background-color: #e8f5e9; color: #2e7d32; }
+        .badge-riesgo { background-color: #fff3e0; color: #e65100; }
+        .badge-critico { background-color: #ffebee; color: #c62828; }
+
+        .btn-accion {
+            background: #ffffff;
+            border: 1px solid #6b3e4a;
+            color: #6b3e4a;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-accion:hover {
+            background: #6b3e4a;
+            color: #ffffff;
         }
 
-        .btn-pdf:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5) !important;
-            background: linear-gradient(135deg, #e5be48 0%, #c99e32 100%) !important;
+        /* --- ESTILOS DE IMPRESIÓN (CARTA OFICIAL EN PDF) --- */
+        #hoja-notificacion { display: none; }
+
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; }
+            .magic-container, .main-container { display: none !important; }
+            #hoja-notificacion { 
+                display: block !important; 
+                padding: 40px; 
+                font-family: Arial, sans-serif;
+                color: #000000;
+            }
+
+            .header-doc { text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
+            .header-doc h2 { font-size: 18px; margin: 0; text-transform: uppercase; color: #000; }
+            .header-doc h3 { font-size: 14px; margin: 5px 0; font-weight: normal; }
+            
+            .info-box { margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+            .tabla-doc { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            .tabla-doc th, .tabla-doc td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 13px; }
+            .tabla-doc th { background-color: #f0f0f0; }
+
+            .leyenda-box { 
+                border: 1.5px solid #000; 
+                padding: 15px; 
+                background-color: #fafafa; 
+                margin: 25px 0; 
+                font-size: 13px; 
+                line-height: 1.6;
+                text-align: justify;
+            }
+
+            .firmas-container { display: flex; justify-content: space-between; margin-top: 80px; }
+            .firma-box { width: 45%; text-align: center; font-size: 13px; }
+            .linea-firma { border-top: 1px solid #000; margin-bottom: 5px; }
         }
     </style>
 </head>
@@ -317,6 +344,7 @@
 
     <div class="magic-container" id="magic-bg"></div>
 
+    <!-- CONTENEDOR PRINCIPAL DE LA APP -->
     <div class="main-container">
 
         <!-- MENÚ DE NAVEGACIÓN -->
@@ -325,7 +353,7 @@
             <button id="btn-reportes" class="nav-btn" onclick="cambiarVista('reportes')">📊 Reportes</button>
         </div>
 
-        <!-- VISTA 1: EL ESCÁNER -->
+        <!-- VISTA 1: ESCÁNER -->
         <div id="vista-escaner" class="vista vista-activa">
             <h2>Control de Asistencia Clases | Adriana Barrios</h2>
 
@@ -348,22 +376,17 @@
                 </div>
             </div>
 
-            <!-- CÁMARA ESCÁNER Y MENSAJES -->
             <div id="reader"></div>
             <div id="mensaje"></div>
         </div>
 
-        <!-- VISTA 2: LOS REPORTES -->
+        <!-- VISTA 2: REPORTES Y LISTADO -->
         <div id="vista-reportes" class="vista">
             <h2>Panel de Asistencia y Reportes</h2>
 
-            <button type="button" class="btn-pdf" onclick="descargarPDF()">
-                📄 Descargar Reporte PDF
-            </button>
-
             <div style="margin: 15px 0;">
                 <label for="filtro-materia" style="font-weight: bold; color: var(--texto-suave);">Filtrar por Materia / Grupo:</label><br>
-                <select id="filtro-materia" onchange="filtrarReporte()" style="padding: 8px; font-size: 14px; margin-top: 5px; width: 100%; max-width: 400px;">
+                <select id="filtro-materia" onchange="filtrarReporte()" style="padding: 10px; font-size: 14px; margin-top: 5px; width: 100%; max-width: 400px;">
                     <option value="TODAS">-- Mostrar Todas las Materias --</option>
                 </select>
             </div>
@@ -381,10 +404,11 @@
                             <th>Just.</th>
                             <th>% Asist.</th>
                             <th>Estado</th>
+                            <th>Reporte Individual</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-reporte">
-                        <!-- Se llena dinámicamente mediante JS -->
+                        <!-- Se llena dinámicamente -->
                     </tbody>
                 </table>
             </div>
@@ -392,14 +416,85 @@
 
     </div>
 
+    <!-- FORMATO OCULTO PARA IMPRESIÓN DE CARTA OFICIAL -->
+    <div id="hoja-notificacion">
+        <div class="header-doc">
+            <h2>Universidad Autónoma de Sinaloa</h2>
+            <h3>Notificación Oficial de Asistencia y Situación Académica</h3>
+            <p style="font-size: 12px; margin-top: 8px;"><strong>Docente:</strong> Mtra. Adriana Barrios &nbsp;|&nbsp; <strong>Fecha de expedición:</strong> <span id="doc-fecha"></span></p>
+        </div>
+
+        <div class="info-box">
+            <strong>Nombre del Estudiante:</strong> <span id="doc-nombre"></span><br>
+            <strong>Matrícula:</strong> <span id="doc-matricula"></span><br>
+            <strong>Materia / Grupo:</strong> <span id="doc-materia"></span>
+        </div>
+
+        <p><strong>REGISTRO ACUMULADO DE ASISTENCIAS:</strong></p>
+        <table class="tabla-doc">
+            <thead>
+                <tr>
+                    <th>Asistencias</th>
+                    <th>Retardos</th>
+                    <th>Faltas</th>
+                    <th>Justificadas</th>
+                    <th>% Asistencia Actual</th>
+                    <th>Estatus Actual</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="doc-asist"></td>
+                    <td id="doc-ret"></td>
+                    <td id="doc-faltas"></td>
+                    <td id="doc-just"></td>
+                    <td id="doc-porcentaje" style="font-weight: bold;"></td>
+                    <td id="doc-estatus" style="font-weight: bold;"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="leyenda-box">
+            <strong>NOTIFICACIÓN Y COMPROMISO ACADÉMICO:</strong><br><br>
+            Por medio del presente documento, el/la estudiante se da por formalmente enterado(a) de su registro acumulado de asistencia. De acuerdo con el <strong>Reglamento Institucional de Evaluación de la Universidad Autónoma de Sinaloa (UAS)</strong>, se establece como requisito obligatorio contar con un mínimo del <strong>80% de asistencia</strong> a las sesiones programadas para mantener el derecho a evaluación ordinaria.<br><br>
+            En caso de encontrarse en estatus <strong>Crítico (< 80%)</strong> al finalizar el periodo, el/la estudiante perderá automáticamente el derecho a presentar la evaluación ordinaria y no podrá acreditar la asignatura en el periodo regular.
+        </div>
+
+        <div class="firmas-container">
+            <div class="firma-box">
+                <div class="linea-firma"></div>
+                <strong>Firma de Conformidad del Estudiante</strong><br>
+                <span>Se da por notificado(a)</span>
+            </div>
+            <div class="firma-box">
+                <div class="linea-firma"></div>
+                <strong>Mtra. Adriana Barrios</strong><br>
+                <span>Docente Titular</span>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ==========================================
-        // 1. CONFIGURACIÓN
-        // ==========================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzgskaZuX8AF7ne7zn0cWsx-lh6BNn9l8E5FLUd8KOoBDa_CDz0SKShc5eXcsa3GyH/exec"; 
 
         // ==========================================
-        // 2. NAVEGACIÓN ENTRE VISTAS
+        // 1. REGLA INSTITUCIONAL DE ESTATUS (UAS)
+        // ==========================================
+        function evaluarEstatus(porcentajeTexto) {
+            let num = parseFloat(String(porcentajeTexto).replace('%', '').trim());
+            if (isNaN(num)) return { texto: 'Regular', clase: 'badge-regular' };
+
+            if (num >= 90) {
+                return { texto: 'Regular', clase: 'badge-regular' };
+            } else if (num >= 80) {
+                return { texto: 'En Riesgo', clase: 'badge-riesgo' };
+            } else {
+                return { texto: 'Crítico', clase: 'badge-critico' };
+            }
+        }
+
+        // ==========================================
+        // 2. NAV & VISTAS
         // ==========================================
         function cambiarVista(vistaDestino) {
             document.getElementById('vista-escaner').classList.remove('vista-activa');
@@ -417,17 +512,12 @@
             }
         }
 
-        // ==========================================
-        // 3. OBTENER MATERIAS DEL EXCEL
-        // ==========================================
         async function cargarMaterias() {
             try {
                 const response = await fetch(SCRIPT_URL + "?accion=obtenerMaterias");
                 const materias = await response.json();
-                
                 const selectMateria = document.getElementById("materia");
                 selectMateria.innerHTML = '<option value="">-- Elige una materia --</option>';
-                
                 materias.forEach(materia => {
                     const option = document.createElement("option");
                     option.value = materia;
@@ -436,19 +526,17 @@
                 });
             } catch (error) {
                 console.error("Error al cargar materias:", error);
-                document.getElementById("materia").innerHTML = '<option value="">Error al cargar materias</option>';
             }
         }
 
         // ==========================================
-        // 4. LÓGICA DEL ESCÁNER QR
+        // 3. ESCÁNER QR
         // ==========================================
         let escaneando = false;
         let html5QrcodeScanner = null;
 
         function onScanSuccess(decodedText, decodedResult) {
             if (escaneando) return;
-            
             const materiaSeleccionada = document.getElementById("materia").value;
             const mensajeDiv = document.getElementById("mensaje");
 
@@ -471,9 +559,6 @@
                 if (resultado.status === 'success') {
                     mensajeDiv.style.color = "#2e7d32";
                     mensajeDiv.innerText = `✅ ${resultado.estatusRegistro.toUpperCase()}: ${resultado.alumno}`;
-                    if (typeof cargarDatosReporte === 'function') {
-                        cargarDatosReporte();
-                    }
                 } else {
                     mensajeDiv.style.color = "#d9534f";
                     mensajeDiv.innerText = `⚠️ ${resultado.mensaje}`;
@@ -486,59 +571,45 @@
             })
             .catch(error => {
                 console.error("Error al registrar:", error);
-                mensajeDiv.style.color = "#d9534f";
-                mensajeDiv.innerText = "❌ Error de conexión con Google Sheets.";
+                mensajeDiv.innerText = "❌ Error de conexión.";
                 escaneando = false;
             });
-        }
-
-        function onScanFailure(error) {
-            // Silencioso
         }
 
         function fijarHoraActual() {
             const inputHora = document.getElementById("hora-inicio");
             if (!inputHora) return;
             const ahora = new Date();
-            const horas = String(ahora.getHours()).padStart(2, '0');
-            const minutos = String(ahora.getMinutes()).padStart(2, '0');
-            inputHora.value = `${horas}:${minutos}`;
+            inputHora.value = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
         }
 
-        // INICIALIZADOR DE CÁMARA
         function encenderEscaner() {
-            if (html5QrcodeScanner !== null) return; // Ya se inició
-
+            if (html5QrcodeScanner !== null) return;
             if (typeof Html5QrcodeScanner === 'undefined') {
                 setTimeout(encenderEscaner, 200);
                 return;
             }
-
             try {
                 html5QrcodeScanner = new Html5QrcodeScanner(
                     "reader",
-                    { 
-                        fps: 10, 
-                        qrbox: { width: 220, height: 220 },
-                        rememberLastUsedCamera: true
-                    },
+                    { fps: 10, qrbox: { width: 220, height: 220 }, rememberLastUsedCamera: true },
                     false
                 );
-                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+                html5QrcodeScanner.render(onScanSuccess, () => {});
             } catch (e) {
-                console.error("Error al iniciar escáner:", e);
+                console.error("Error escáner:", e);
             }
         }
 
         // ==========================================
-        // 5. REPORTES
+        // 4. TABLA DE REPORTES
         // ==========================================
         let datosReporteGlobal = [];
 
         async function cargarDatosReporte() {
             const tbody = document.getElementById("tbody-reporte");
             if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="9" style="padding: 15px;">⏳ Cargando datos desde Google Sheets...</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" style="padding: 15px;">⏳ Cargando datos desde Google Sheets...</td></tr>`;
             }
 
             try {
@@ -549,7 +620,7 @@
             } catch (error) {
                 console.error("Error al cargar reporte:", error);
                 if (tbody) {
-                    tbody.innerHTML = `<tr><td colspan="9" style="color: red; padding: 15px;">❌ Error al conectar con Google Sheets.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="10" style="color: red; padding: 15px;">❌ Error al conectar con Google Sheets.</td></tr>`;
                 }
             }
         }
@@ -582,30 +653,54 @@
                 : datosReporteGlobal.filter(item => item.materia === materiaSeleccionada);
 
             if (datosFiltrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="padding: 15px;">No hay alumnos registrados en esta materia.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" style="padding: 15px;">No hay alumnos registrados.</td></tr>`;
                 return;
             }
 
-            datosFiltrados.forEach(alumno => {
+            datosFiltrados.forEach((alumno, index) => {
                 const tr = document.createElement("tr");
-                const colorEstado = alumno.alerta === "Riesgo" ? "color: red; font-weight: bold;" : "color: green;";
+                const estatusObj = evaluarEstatus(alumno.porcentaje);
 
                 tr.innerHTML = `
                     <td>${alumno.matricula}</td>
-                    <td style="text-align: left;">${alumno.nombre}</td>
+                    <td style="text-align: left; font-weight: 600;">${alumno.nombre}</td>
                     <td>${alumno.materia || '-'}</td>
                     <td>${alumno.asistencias}</td>
                     <td>${alumno.retardos}</td>
                     <td>${alumno.faltas}</td>
                     <td>${alumno.justificados}</td>
-                    <td>${alumno.porcentaje}</td>
-                    <td style="${colorEstado}">${alumno.alerta}</td>
+                    <td><strong>${alumno.porcentaje}</strong></td>
+                    <td><span class="badge-estado ${estatusObj.clase}">${estatusObj.texto}</span></td>
+                    <td>
+                        <button class="btn-accion" onclick="imprimirCartaIndividual(${index})">📄 Notificación</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function descargarPDF() {
+        // ==========================================
+        // 5. CARTA/REPORTES INDIVIDUALES
+        // ==========================================
+        function imprimirCartaIndividual(index) {
+            const alumno = datosReporteGlobal[index];
+            if (!alumno) return;
+
+            const estatusObj = evaluarEstatus(alumno.porcentaje);
+            const fechaHoy = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById("doc-fecha").innerText = fechaHoy;
+            document.getElementById("doc-nombre").innerText = alumno.nombre;
+            document.getElementById("doc-matricula").innerText = alumno.matricula;
+            document.getElementById("doc-materia").innerText = alumno.materia || 'General';
+            
+            document.getElementById("doc-asist").innerText = alumno.asistencias;
+            document.getElementById("doc-ret").innerText = alumno.retardos;
+            document.getElementById("doc-faltas").innerText = alumno.faltas;
+            document.getElementById("doc-just").innerText = alumno.justificados;
+            document.getElementById("doc-porcentaje").innerText = alumno.porcentaje;
+            document.getElementById("doc-estatus").innerText = estatusObj.texto.toUpperCase();
+
             window.print();
         }
 
@@ -629,18 +724,13 @@
                 
                 container.appendChild(el);
 
-                setTimeout(function() {
-                    el.remove();
-                }, 9000);
+                setTimeout(function() { el.remove(); }, 9000);
             }
 
-            for (var i = 0; i < 3; i++) {
-                setTimeout(crearMariposa, i * 300);
-            }
+            for (var i = 0; i < 3; i++) { setTimeout(crearMariposa, i * 300); }
             setInterval(crearMariposa, 1100);
         })();
 
-        // INICIALIZAR AL CARGAR COMPLETAMENTE LA PÁGINA
         window.addEventListener('DOMContentLoaded', () => {
             fijarHoraActual();
             cargarMaterias();
