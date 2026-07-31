@@ -131,22 +131,21 @@
         // ==========================================
         // 2. NAVEGACIÓN ENTRE VISTAS
         // ==========================================
-        function cambiarVista(vistaDestino) {
-            // Ocultamos ambas vistas
+function cambiarVista(vistaDestino) {
             document.getElementById('vista-escaner').classList.remove('vista-activa');
             document.getElementById('vista-reportes').classList.remove('vista-activa');
-            
-            // Quitamos el color de selección de ambos botones
             document.getElementById('btn-escaner').classList.remove('activo');
             document.getElementById('btn-reportes').classList.remove('activo');
             
-            // Activamos solo la vista y el botón seleccionados
             if(vistaDestino === 'escaner') {
                 document.getElementById('vista-escaner').classList.add('vista-activa');
                 document.getElementById('btn-escaner').classList.add('activo');
             } else if (vistaDestino === 'reportes') {
                 document.getElementById('vista-reportes').classList.add('vista-activa');
                 document.getElementById('btn-reportes').classList.add('activo');
+                
+                // ¡AQUÍ ESTÁ LA MAGIA! Cargamos la tabla al abrir la pestaña
+                cargarDatosReporte();
             }
         }
 
@@ -233,6 +232,50 @@
             );
             html5QrcodeScanner.render(onScanSuccess, onScanFailure);
         };
+        // ==========================================
+        // 5. CARGAR Y DIBUJAR REPORTES
+        // ==========================================
+        async function cargarDatosReporte() {
+            const contenedor = document.getElementById("contenedor-tabla");
+            contenedor.innerHTML = "<i>Cargando datos desde Google Sheets... ⏳</i>";
+            
+            try {
+                const response = await fetch(SCRIPT_URL + "?accion=obtenerReporte");
+                const datos = await response.json();
+                
+                // Creamos el diseño de la tabla
+                let tablaHTML = `<table style="width:100%; border-collapse: collapse; margin-top: 15px; background-color: white;">
+                    <tr style="background-color: #003366; color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">Matrícula</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Nombre</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Asist.</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Faltas</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Estado</th>
+                    </tr>`;
+                    
+                datos.forEach(alumno => {
+                    // Lógica visual: Si tiene 3 o más faltas, se pinta de rojo
+                    let enRiesgo = alumno.faltas >= 3;
+                    let colorEstado = enRiesgo ? "color: #d9534f; font-weight: bold;" : "color: #28a745;";
+                    let textoEstado = enRiesgo ? "⚠️ En Riesgo" : "Regular";
+                    
+                    tablaHTML += `<tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${alumno.matricula}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${alumno.nombre}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${alumno.asistencias}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; ${colorEstado}">${alumno.faltas}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; ${colorEstado}">${textoEstado}</td>
+                    </tr>`;
+                });
+                
+                tablaHTML += "</table>";
+                contenedor.innerHTML = tablaHTML;
+                
+            } catch (error) {
+                console.error(error);
+                contenedor.innerHTML = "<i style='color: red;'>❌ Error al cargar los reportes. Revisa la conexión.</i>";
+            }
+        }
     </script>
 </body>
 </html>
