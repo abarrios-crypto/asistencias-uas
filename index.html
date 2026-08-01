@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Asistencia Clases | Mtra. Adriana A. Barrios Rodríguez </title>
+    <title>Asistencia Clases | Mtra. Adriana A. Barrios Rodríguez</title>
 
-    <!-- Librería para el escáner QR (Versión estable CDNJS) -->
+    <!-- Librería para el escáner QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-        /* RESET DE DIMENSIONES PARA EVITAR DESBORDAMIENTO */
         *, *::before, *::after {
             box-sizing: border-box;
         }
@@ -24,7 +23,6 @@
             --texto-suave: #486351;      
             --verde-salvia: #4a6f55;     
             --verde-oscuro: #2e4937;     
-            --rosa-detalles: #e2a8b5;
             --sombra: 0 16px 45px rgba(74, 111, 85, 0.18);
         }
 
@@ -39,46 +37,35 @@
             background: linear-gradient(135deg, #f8e1e6 0%, #f1c7d2 50%, #e5b1be 100%);
             color: var(--texto-dark);
             margin: 0;
-            padding: 30px 15px;
+            padding: 20px 12px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            position: relative;
         }
 
-        /* --- CONTROL DE VISTAS (PESTAÑAS) --- */
-        .vista { 
-            display: none; 
-            width: 100%;
-        }
-        .vista-activa { 
-            display: block !important; 
-        }
+        .vista { display: none; width: 100%; }
+        .vista-activa { display: block !important; }
 
-        /* --- PANTALLA DE BLOQUEO (MODAL DE SEGURIDAD) --- */
+        /* --- PANTALLA DE BLOQUEO --- */
         #pantalla-bloqueo {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             background: rgba(35, 53, 41, 0.95);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             z-index: 99999;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             padding: 15px;
         }
 
         .box-bloqueo {
             background: #ffffff;
             border-radius: 28px;
-            padding: 40px 25px;
-            max-width: 360px;
+            padding: 35px 25px;
+            max-width: 380px;
             width: 100%;
             text-align: center;
             box-shadow: 0 20px 50px rgba(0,0,0,0.35);
@@ -88,15 +75,14 @@
         .box-bloqueo h3 {
             font-family: 'Playfair Display', serif;
             color: var(--verde-salvia);
-            margin-top: 10px;
-            margin-bottom: 5px;
+            margin: 10px 0 5px 0;
             font-size: 22px;
         }
 
         .box-bloqueo p {
             color: var(--texto-suave);
             font-size: 13px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .box-bloqueo input {
@@ -106,13 +92,11 @@
             margin-bottom: 15px;
         }
 
-        /* --- MARIPOSAS Y DESTELLOS FLOTANTES --- */
+        /* --- MARIPOSAS FLOTANTES --- */
         .magic-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             pointer-events: none;
             z-index: 9999;
             overflow: hidden;
@@ -121,68 +105,55 @@
         .butterfly, .sparkle {
             position: fixed;
             pointer-events: none;
-            user-select: none;
             z-index: 9999;
             animation: vuelaMariposa 9s linear forwards;
         }
 
         @keyframes vuelaMariposa {
-            0% {
-                transform: translateY(105vh) translateX(0vw) rotate(0deg);
-                opacity: 0;
-            }
+            0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
             15% { opacity: 0.95; }
             85% { opacity: 0.95; }
-            100% {
-                transform: translateY(-10vh) translateX(8vw) rotate(25deg);
-                opacity: 0;
-            }
+            100% { transform: translateY(-10vh) rotate(25deg); opacity: 0; }
         }
 
         /* --- TARJETA PRINCIPAL --- */
         .main-container {
             position: relative;
             z-index: 2;
-            max-width: 1000px;
+            max-width: 1050px;
             width: 100%;
             background: var(--card-bg);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border-radius: 32px;
             border: 2px solid rgba(255, 255, 255, 0.9);
             box-shadow: var(--sombra);
-            padding: 35px 30px 25px 30px;
+            padding: 30px 20px;
         }
 
         h2 {
             font-family: 'Playfair Display', serif;
             color: var(--texto-dark);
             text-align: center;
-            font-size: 26px;
-            margin: 15px 0 25px 0;
-            letter-spacing: 0.3px;
-            word-wrap: break-word;
+            font-size: 24px;
+            margin: 10px 0 20px 0;
         }
 
-        /* --- MENÚ DE NAVEGACIÓN CHIP --- */
         .navbar {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             background: rgba(248, 225, 230, 0.5);
-            padding: 7px;
+            padding: 8px;
             border-radius: 50px;
             border: 1.5px solid var(--dorado-soft);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            width: 100%;
         }
 
         .nav-btn {
             background: #ffffff;
             border: 1px solid rgba(200, 155, 60, 0.2);
-            padding: 10px 24px;
+            padding: 10px 20px;
             font-size: 14px;
             font-weight: 600;
             color: var(--texto-suave);
@@ -191,79 +162,36 @@
             transition: all 0.3s ease;
         }
 
-        .nav-btn:hover {
-            background: #ffffff;
-            color: var(--texto-dark);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
         .nav-btn.activo {
             background: linear-gradient(135deg, #4a6f55 0%, #2e4937 100%);
             color: #fff;
             border-color: transparent;
-            box-shadow: 0 4px 14px rgba(46, 73, 55, 0.35);
         }
 
-        .btn-bloquear {
-            background: #fff0f3;
-            color: #c62828;
-            border: 1px solid rgba(198, 40, 40, 0.3);
-        }
+        .btn-bloquear { background: #fff0f3; color: #c62828; border: 1px solid rgba(198, 40, 40, 0.3); }
 
-        .btn-bloquear:hover {
-            background: #c62828;
-            color: #ffffff;
-        }
-
-        /* --- PANEL DE CONTROLES --- */
         .panel-controles {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+            gap: 18px;
             background: rgba(255, 255, 255, 0.7);
             border: 1.5px solid var(--dorado-soft);
             border-radius: 24px;
-            padding: 22px;
+            padding: 20px;
             margin-bottom: 25px;
-            align-items: end;
-            width: 100%;
         }
 
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            text-align: left;
-            width: 100%;
-        }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        .control-group label { font-size: 12px; font-weight: 700; color: var(--texto-suave); text-transform: uppercase; }
 
-        .control-group label {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--texto-suave);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-left: 10px;
-        }
-
-        select, input[type="time"], input[type="password"], input[type="text"] {
+        select, input[type="time"], input[type="password"] {
             width: 100%;
-            max-width: 100%;
             background: #ffffff;
             border: 1.5px solid var(--dorado-soft);
             border-radius: 50px !important;
-            padding: 11px 20px;
+            padding: 10px 18px;
             font-size: 14px;
-            color: var(--texto-dark);
-            font-family: 'Plus Jakarta Sans', sans-serif;
             outline: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            transition: all 0.3s ease;
-        }
-
-        select:focus, input:focus {
-            border-color: var(--dorado);
-            box-shadow: 0 0 12px rgba(200, 155, 60, 0.4);
         }
 
         .btn-chip {
@@ -271,276 +199,115 @@
             border: 1.5px solid var(--dorado);
             color: var(--texto-dark);
             border-radius: 50px;
-            padding: 11px 20px;
-            font-size: 14px;
+            padding: 10px 18px;
+            font-size: 13px;
             font-weight: 600;
-            font-family: 'Plus Jakarta Sans', sans-serif;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(200, 155, 60, 0.2);
         }
 
-        .btn-chip:hover {
-            background: var(--dorado);
+        .btn-chip:hover { background: var(--dorado); color: #ffffff; }
+
+        .btn-bio {
+            background: linear-gradient(135deg, #4a6f55 0%, #2e4937 100%);
             color: #ffffff;
-            box-shadow: 0 4px 15px rgba(200, 155, 60, 0.45);
-            transform: translateY(-1px);
-        }
-
-        .time-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            border: none;
+            margin-top: 8px;
             width: 100%;
         }
 
-        /* --- ESCÁNER --- */
+        .time-container { display: flex; gap: 10px; align-items: center; }
+
         #reader {
-            width: 100%;
-            max-width: 440px;
-            min-height: 280px;
-            margin: 20px auto;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 2px solid var(--dorado-soft);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            background: #ffffff;
-            padding: 10px;
+            width: 100%; max-width: 420px; min-height: 260px;
+            margin: 20px auto; border-radius: 24px;
+            border: 2px solid var(--dorado-soft); background: #ffffff; padding: 8px;
         }
 
-        #reader button {
-            background: linear-gradient(135deg, #c89b3c 0%, #a67c2e 100%) !important;
-            color: #ffffff !important;
-            border: none !important;
-            border-radius: 50px !important;
-            padding: 9px 20px !important;
-            font-size: 13px !important;
-            font-weight: 600 !important;
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            cursor: pointer !important;
-            box-shadow: 0 4px 12px rgba(200, 155, 60, 0.35) !important;
-            margin: 8px 4px !important;
-        }
+        #mensaje { text-align: center; font-weight: 700; margin-top: 15px; font-size: 15px; }
 
-        #mensaje {
-            text-align: center;
-            font-weight: 700;
-            margin-top: 15px;
-            font-size: 15px;
-            word-break: break-word;
-        }
-
-        /* --- TABLA Y ESTADOS --- */
         .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border-radius: 20px;
-            background: #ffffff;
-            border: 1.5px solid var(--dorado-soft);
-            margin-top: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            width: 100%; overflow-x: auto;
+            border-radius: 20px; background: #ffffff;
+            border: 1.5px solid var(--dorado-soft); margin-top: 15px;
         }
 
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th {
-            background: linear-gradient(90deg, #4a6f55 0%, #35533f 100%);
-            color: #f0f7f2;
-            font-weight: 600;
-            font-size: 13px;
-            padding: 15px 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        td { padding: 13px 10px; border-bottom: 1px solid rgba(226, 168, 181, 0.25); font-size: 14px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; min-width: 780px; }
+        th { background: #4a6f55; color: #ffffff; font-size: 12px; padding: 12px 8px; text-transform: uppercase; }
+        td { padding: 10px 8px; border-bottom: 1px solid rgba(226, 168, 181, 0.25); font-size: 13px; text-align: center; }
 
-        .badge-estado {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 12px;
-            display: inline-block;
-        }
+        .badge-estado { padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 11px; }
         .badge-regular { background-color: #e8f5e9; color: #2e7d32; }
         .badge-riesgo { background-color: #fff3e0; color: #e65100; }
         .badge-critico { background-color: #ffebee; color: #c62828; }
 
         .btn-accion {
-            background: #ffffff;
-            border: 1.5px solid #4a6f55;
-            color: #4a6f55;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            background: #ffffff; border: 1.5px solid #4a6f55; color: #4a6f55;
+            padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer;
         }
-        .btn-accion:hover {
-            background: #4a6f55;
-            color: #ffffff;
-            box-shadow: 0 3px 10px rgba(74, 111, 85, 0.3);
-        }
+        .btn-accion:hover { background: #4a6f55; color: #ffffff; }
 
-        /* --- FOOTER DE AUTORÍA --- */
+        .btn-justificar {
+            border-color: var(--dorado); color: var(--dorado); margin-right: 4px;
+        }
+        .btn-justificar:hover { background: var(--dorado); color: #ffffff; }
+
         .app-footer {
-            margin-top: 35px;
-            padding-top: 18px;
+            margin-top: 30px; padding-top: 15px;
             border-top: 1.5px dashed var(--dorado-soft);
-            text-align: center;
-            font-size: 13px;
-            color: var(--texto-suave);
-            font-weight: 500;
-        }
-        .app-footer strong {
-            color: var(--verde-salvia);
-            font-weight: 700;
+            text-align: center; font-size: 12px; color: var(--texto-suave);
         }
 
-        /* ==========================================
-           📱 MEDIA QUERIES PARA CELULARES
-           ========================================== */
         @media (max-width: 650px) {
-            body {
-                padding: 12px 8px;
-            }
-
-            .main-container {
-                padding: 20px 14px 20px 14px;
-                border-radius: 22px;
-            }
-
-            h2 {
-                font-size: 20px;
-                margin: 10px 0 18px 0;
-            }
-
-            .navbar {
-                flex-direction: column;
-                border-radius: 24px;
-                padding: 8px;
-                gap: 8px;
-            }
-
-            .nav-btn {
-                width: 100%;
-                text-align: center;
-                padding: 11px 15px;
-            }
-
-            .panel-controles {
-                grid-template-columns: 1fr;
-                padding: 16px 12px;
-                gap: 16px;
-                border-radius: 20px;
-            }
-
-            .time-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .time-container input[type="time"],
-            .time-container .btn-chip {
-                width: 100%;
-            }
-
-            .btn-chip {
-                white-space: normal;
-                text-align: center;
-            }
-
-            #reader {
-                max-width: 100%;
-                min-height: 240px;
-                padding: 5px;
-                border-radius: 18px;
-            }
-
-            #filtro-materia {
-                max-width: 100% !important;
-            }
-        }
-
-        /* --- ESTILOS DE IMPRESIÓN (PDF INDIVIDUAL) --- */
-        #hoja-notificacion { display: none; }
-
-        @media print {
-            body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; }
-            .magic-container, .main-container, #pantalla-bloqueo { display: none !important; }
-            #hoja-notificacion { 
-                display: block !important; 
-                padding: 40px; 
-                font-family: Arial, sans-serif;
-                color: #000000;
-            }
-
-            .header-doc { text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
-            .header-doc h2 { font-size: 18px; margin: 0; text-transform: uppercase; color: #000; }
-            .header-doc h3 { font-size: 14px; margin: 5px 0; font-weight: normal; }
-            
-            .info-box { margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
-            .tabla-doc { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            .tabla-doc th, .tabla-doc td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 13px; }
-            .tabla-doc th { background-color: #f0f0f0; }
-
-            .leyenda-box { 
-                border: 1.5px solid #000; 
-                padding: 15px; 
-                background-color: #fafafa; 
-                margin: 25px 0; 
-                font-size: 13px; 
-                line-height: 1.6;
-                text-align: justify;
-            }
-
-            .firmas-container { display: flex; justify-content: space-between; margin-top: 80px; }
-            .firma-box { width: 45%; text-align: center; font-size: 13px; }
-            .linea-firma { border-top: 1px solid #000; margin-bottom: 5px; }
+            .navbar { flex-direction: column; }
+            .nav-btn { width: 100%; }
+            .time-container { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA DE BLOQUEO DE SEGURIDAD -->
+    <!-- PANTALLA DE BLOQUEO (CON HUELLA DACTILAR) -->
     <div id="pantalla-bloqueo">
         <div class="box-bloqueo">
-            <div style="font-size: 40px;">🔒</div>
-            <h3>Acceso Docente</h3>
-            <p>Ingresa tu clave de acceso para continuar</p>
+            <div style="font-size: 38px;">🔒</div>
+            <h3>¡Bienvenida, Adriana¡</h3>
+            <p>Listos para la clase de hoy 💖</p>
+            
             <input type="password" id="input-clave" placeholder="••••" onkeypress="evaluarTecla(event)">
-            <button class="btn-chip" style="width: 100%;" onclick="desbloquearSistema()">Desbloquear</button>
-            <div id="err-clave" style="color: #c62828; font-size: 12px; font-weight: bold; margin-top: 12px; display: none;">
-                ⚠️ Contraseña incorrecta
+            
+            <button class="btn-chip" style="width: 100%; margin-bottom: 8px;" onclick="desbloquearSistema()">Desbloquear con Clave</button>
+            <button id="btn-huella" class="btn-chip btn-bio" onclick="desbloquearConBiometrico()">☝️🫆 Desbloquear con Huella</button>
+            
+            <div id="err-clave" style="color: #c62828; font-size: 12px; font-weight: bold; margin-top: 10px; display: none;">
+                ⚠️ Autenticación no válida
             </div>
         </div>
     </div>
 
     <div class="magic-container" id="magic-bg"></div>
 
-    <!-- CONTENEDOR PRINCIPAL DE LA APP -->
     <div class="main-container">
-
         <!-- MENÚ DE NAVEGACIÓN -->
         <div class="navbar">
             <button id="btn-escaner" class="nav-btn activo" onclick="cambiarVista('escaner')">📷 Escáner</button>
             <button id="btn-reportes" class="nav-btn" onclick="cambiarVista('reportes')">📊 Reportes</button>
+            <button class="nav-btn" style="border-color: var(--verde-salvia);" onclick="registrarBiometrico()">🫆 Registrar Huella</button>
             <button class="nav-btn btn-bloquear" onclick="bloquearSistemaManualmente()">🔒 Bloquear</button>
         </div>
 
         <!-- VISTA 1: ESCÁNER -->
         <div id="vista-escaner" class="vista vista-activa">
-            <h2>Control de Asistencia Clases | Adriana A. Barrios Rodríguez </h2>
+            <h2>Control de Asistencia Clases | Adriana A. Barrios Rodríguez</h2>
 
             <div class="panel-controles">
                 <div class="control-group">
                     <label for="materia">Materia</label>
-                    <select id="materia" onchange="alCambiarMateria()">
+                    <select id="materia" onchange="fijarHoraActual()">
                         <option value="">Cargando materias...</option>
                     </select>
                 </div>
@@ -549,9 +316,7 @@
                     <label for="hora-inicio">Hora de inicio de la clase</label>
                     <div class="time-container">
                         <input type="time" id="hora-inicio" value="08:00">
-                        <button type="button" class="btn-chip" onclick="fijarHoraActual()">
-                            <span>⏰</span> Usar hora actual
-                        </button>
+                        <button type="button" class="btn-chip" onclick="fijarHoraActual()">⌚ Hora actual</button>
                     </div>
                 </div>
             </div>
@@ -560,7 +325,7 @@
             <div id="mensaje"></div>
         </div>
 
-        <!-- VISTA 2: REPORTES Y LISTADO -->
+        <!-- VISTA 2: REPORTES -->
         <div id="vista-reportes" class="vista">
             <h2>Panel de Asistencia y Reportes</h2>
 
@@ -584,123 +349,105 @@
                             <th>Just.</th>
                             <th>% Asist.</th>
                             <th>Estado</th>
-                            <th>Reporte Individual</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tbody-reporte">
-                        <!-- Se llena dinámicamente -->
-                    </tbody>
+                    <tbody id="tbody-reporte"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- FOOTER DE AUTORÍA -->
         <footer class="app-footer">
-            Diseñado y Desarrollado con 💖 por la <strong>Mtra. Adriana A. Barrios Rodríguez </strong> &bull; Facultad de Ciencias Naturales y Exactas | Universidad Autónoma de Sinaloa
+            Diseñado y Desarrollado con 💖 por la <strong>Mtra. Adriana A. Barrios Rodríguez</strong> &bull; UAS
         </footer>
-
-    </div>
-
-    <!-- FORMATO OCULTO PARA IMPRESIÓN DE CARTA OFICIAL -->
-    <div id="hoja-notificacion">
-        <div class="header-doc">
-            <h2>Universidad Autónoma de Sinaloa</h2>
-            <h3>Facultad de Ciencias Naturales y Exactas</h3>
-            <h3>Licenciatura en Biomedicina</h3>
-            <h3>Notificación Oficial de Asistencia y Situación Académica</h3>
-            <p style="font-size: 12px; margin-top: 8px;"><strong>Docente:</strong> Mtra. Adriana A. Barrios Rodríguez &nbsp;|&nbsp; <strong>Fecha de expedición:</strong> <span id="doc-fecha"></span></p>
-        </div>
-
-        <div class="info-box">
-            <strong>Nombre del Estudiante:</strong> <span id="doc-nombre"></span><br>
-            <strong>Matrícula:</strong> <span id="doc-matricula"></span><br>
-            <strong>Materia / Grupo:</strong> <span id="doc-materia"></span>
-        </div>
-
-        <p><strong>REGISTRO ACUMULADO DE ASISTENCIAS:</strong></p>
-        <table class="tabla-doc">
-            <thead>
-                <tr>
-                    <th>Asistencias</th>
-                    <th>Retardos</th>
-                    <th>Faltas</th>
-                    <th>Justificadas</th>
-                    <th>% Asistencia Actual</th>
-                    <th>Estatus Actual</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td id="doc-asist"></td>
-                    <td id="doc-ret"></td>
-                    <td id="doc-faltas"></td>
-                    <td id="doc-just"></td>
-                    <td id="doc-porcentaje" style="font-weight: bold;"></td>
-                    <td id="doc-estatus" style="font-weight: bold;"></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="leyenda-box">
-            <strong>NOTIFICACIÓN Y COMPROMISO ACADÉMICO:</strong><br><br>
-            Por medio del presente documento, el/la estudiante se da por formalmente enterado(a) de su registro acumulado de asistencia. De acuerdo con el <strong>Reglamento Institucional de Evaluación de la Universidad Autónoma de Sinaloa (UAS)</strong>, se establece como requisito obligatorio contar con un mínimo del <strong>80% de asistencia</strong> a las sesiones programadas para mantener el derecho a evaluación ordinaria.<br><br>
-            En caso de encontrarse en estatus <strong>Crítico (< 80%)</strong> al finalizar el periodo, el/la estudiante perderá automáticamente el derecho a presentar la evaluación ordinaria y no podrá acreditar la asignatura en el periodo regular.
-        </div>
-
-        <div class="firmas-container">
-            <div class="firma-box">
-                <div class="linea-firma"></div>
-                <strong>Firma de Conformidad del Estudiante</strong><br>
-                <span>Se da por notificado(a)</span>
-            </div>
-            <div class="firma-box">
-                <div class="linea-firma"></div>
-                <strong>Mtra. Adriana A. Barrios Rodríguez</strong><br>
-                <span>Docente Titular</span>
-            </div>
-        </div>
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzgskaZuX8AF7ne7zn0cWsx-lh6BNn9l8E5FLUd8KOoBDa_CDz0SKShc5eXcsa3GyH/exec"; 
-
-        // ==========================================
-        // 🔑 CONFIGURACIÓN DE SEGURIDAD Y BLOQUEO
-        // ==========================================
-        const CLAVE_ACCESO = "Nsktinuviel88!";         // Tu contraseña personal
-        const MINUTOS_INACTIVIDAD = 3;      // Minutos antes del auto-bloqueo
+        const CLAVE_ACCESO = "Nsktinuviel88!"; 
+        const MINUTOS_INACTIVIDAD = 3;
         let temporizadorInactividad;
 
-        function reiniciarTemporizadorInactividad() {
-            clearTimeout(temporizadorInactividad);
-            temporizadorInactividad = setTimeout(() => {
-                bloquearSistemaManualmente();
-            }, MINUTOS_INACTIVIDAD * 60 * 1000);
-        }
+        // ==========================================
+        // ☝️ BIOMETRÍA Y HUELLA DACTILAR (WEBAUTHN)
+        // ==========================================
+        async function registrarBiometrico() {
+            if (!window.PublicKeyCredential) {
+                alert("Tu dispositivo o navegador no soporta autenticación biométrica.");
+                return;
+            }
 
-        // Detectar actividad de mouse, teclado o toque de pantalla
-        ['mousemove', 'mousedown', 'keypress', 'touchstart', 'scroll'].forEach(evento => {
-            window.addEventListener(evento, reiniciarTemporizadorInactividad, true);
-        });
+            try {
+                const publicKeyOptions = {
+                    challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+                    rp: { name: "Control Asistencia UAS" },
+                    user: {
+                        id: new Uint8Array([1, 2, 3, 4]),
+                        name: "adriana.barrios",
+                        displayName: "Mtra. Adriana A. Barrios Rodríguez"
+                    },
+                    pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                    authenticatorSelection: { userVerification: "preferred" },
+                    timeout: 60000
+                };
 
-        function desbloquearSistema() {
-            const passEntered = document.getElementById("input-clave").value;
-            const errDiv = document.getElementById("err-clave");
-
-            if (passEntered === CLAVE_ACCESO) {
-                document.getElementById("pantalla-bloqueo").style.display = "none";
-                document.getElementById("input-clave").value = "";
-                errDiv.style.display = "none";
-                reiniciarTemporizadorInactividad();
-            } else {
-                errDiv.style.display = "block";
+                await navigator.credentials.create({ publicKey: publicKeyOptions });
+                localStorage.setItem("biometrico_activado", "true");
+                alert("✅ ¡Huella/Biométrico vinculado con éxito en este dispositivo!");
+            } catch (err) {
+                console.error("Error al registrar huella:", err);
+                alert("No se pudo completar el registro biométrico.");
             }
         }
 
-        function evaluarTecla(e) {
-            if (e.key === 'Enter') desbloquearSistema();
+        async function desbloquearConBiometrico() {
+            if (!localStorage.getItem("biometrico_activado")) {
+                alert("Primero debes desbloquear con clave y presionar 'Registrar Huella' en este dispositivo.");
+                return;
+            }
+
+            try {
+                const publicKeyOptions = {
+                    challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+                    timeout: 60000
+                };
+
+                const credential = await navigator.credentials.get({ publicKey: publicKeyOptions });
+                if (credential) {
+                    completarDesbloqueo();
+                }
+            } catch (err) {
+                console.error("Error al validar huella:", err);
+                document.getElementById("err-clave").style.display = "block";
+            }
         }
 
+        function completarDesbloqueo() {
+            document.getElementById("pantalla-bloqueo").style.display = "none";
+            document.getElementById("input-clave").value = "";
+            document.getElementById("err-clave").style.display = "none";
+            reiniciarTemporizadorInactividad();
+        }
+
+        function desbloquearSistema() {
+            if (document.getElementById("input-clave").value === CLAVE_ACCESO) {
+                completarDesbloqueo();
+            } else {
+                document.getElementById("err-clave").style.display = "block";
+            }
+        }
+
+        function reiniciarTemporizadorInactividad() {
+            clearTimeout(temporizadorInactividad);
+            temporizadorInactividad = setTimeout(bloquearSistemaManualmente, MINUTOS_INACTIVIDAD * 60 * 1000);
+        }
+
+        ['mousemove', 'mousedown', 'keypress', 'touchstart'].forEach(e => {
+            window.addEventListener(e, reiniciarTemporizadorInactividad, true);
+        });
+
+        function evaluarTecla(e) { if (e.key === 'Enter') desbloquearSistema(); }
+        
         function bloquearSistemaManualmente() {
             document.getElementById("pantalla-bloqueo").style.display = "flex";
             document.getElementById("input-clave").value = "";
@@ -708,24 +455,50 @@
         }
 
         // ==========================================
-        // 1. REGLA INSTITUCIONAL DE ESTATUS (UAS)
+        // 📊 JUSTIFICANTES DESDE LA INTERFAZ
+        // ==========================================
+        async function solicitarJustificante(index) {
+            const alumno = datosReporteGlobal[index];
+            if (!alumno) return;
+
+            // Confirmación de seguridad previa
+            const confirmacion = confirm(`¿Deseas agregar una falta JUSTIFICADA a:\n${alumno.nombre} (${alumno.materia})?`);
+            if (!confirmacion) return;
+
+            const claveIngresada = prompt("Ingresa tu clave docente para autorizar el justificante:");
+            if (claveIngresada !== CLAVE_ACCESO) {
+                alert("❌ Clave incorrecta. Acción cancelada.");
+                return;
+            }
+
+            try {
+                const url = `${SCRIPT_URL}?accion=registrarJustificante&matricula=${encodeURIComponent(alumno.matricula)}&materia=${encodeURIComponent(alumno.materia)}`;
+                const resp = await fetch(url);
+                const res = await resp.json();
+
+                if (res.status === 'success') {
+                    alert(`✅ Justificante registrado con éxito para ${alumno.nombre}`);
+                    cargarDatosReporte(); // Recargar la tabla automáticamente
+                } else {
+                    alert(`⚠️ ${res.mensaje}`);
+                }
+            } catch (err) {
+                alert("❌ Error de red al procesar el justificante.");
+            }
+        }
+
+        // ==========================================
+        // NAV, ESCÁNER Y CARGA DE DATOS
         // ==========================================
         function evaluarEstatus(porcentajeTexto) {
             let num = parseFloat(String(porcentajeTexto).replace('%', '').trim());
             if (isNaN(num)) return { texto: 'Regular', clase: 'badge-regular' };
 
-            if (num >= 90) {
-                return { texto: 'Regular', clase: 'badge-regular' };
-            } else if (num >= 80) {
-                return { texto: 'En Riesgo', clase: 'badge-riesgo' };
-            } else {
-                return { texto: 'Crítico', clase: 'badge-critico' };
-            }
+            if (num >= 90) return { texto: 'Regular', clase: 'badge-regular' };
+            if (num >= 80) return { texto: 'En Riesgo', clase: 'badge-riesgo' };
+            return { texto: 'Crítico', clase: 'badge-critico' };
         }
 
-        // ==========================================
-        // 2. NAV & VISTAS
-        // ==========================================
         function cambiarVista(vistaDestino) {
             document.getElementById('vista-escaner').classList.remove('vista-activa');
             document.getElementById('vista-reportes').classList.remove('vista-activa');
@@ -735,7 +508,7 @@
             if(vistaDestino === 'escaner') {
                 document.getElementById('vista-escaner').classList.add('vista-activa');
                 document.getElementById('btn-escaner').classList.add('activo');
-            } else if (vistaDestino === 'reportes') {
+            } else {
                 document.getElementById('vista-reportes').classList.add('vista-activa');
                 document.getElementById('btn-reportes').classList.add('activo');
                 cargarDatosReporte();
@@ -748,28 +521,18 @@
                 const materias = await response.json();
                 const selectMateria = document.getElementById("materia");
                 selectMateria.innerHTML = '<option value="">-- Elige una materia --</option>';
-                materias.forEach(materia => {
+                materias.forEach(m => {
                     const option = document.createElement("option");
-                    option.value = materia;
-                    option.textContent = materia;
+                    option.value = m; option.textContent = m;
                     selectMateria.appendChild(option);
                 });
-            } catch (error) {
-                console.error("Error al cargar materias:", error);
-            }
+            } catch (error) { console.error("Error al cargar materias:", error); }
         }
 
-        function alCambiarMateria() {
-            fijarHoraActual();
-        }
-
-        // ==========================================
-        // 3. ESCÁNER QR
-        // ==========================================
-        let escaneando = false;
         let html5QrcodeScanner = null;
+        let escaneando = false;
 
-        function onScanSuccess(decodedText, decodedResult) {
+        function onScanSuccess(decodedText) {
             reiniciarTemporizadorInactividad();
             if (escaneando) return;
             const materiaSeleccionada = document.getElementById("materia").value;
@@ -782,95 +545,52 @@
             }
 
             escaneando = true;
-            mensajeDiv.style.color = "var(--texto-dark)";
-            mensajeDiv.innerText = "⏳ Registrando matrícula " + decodedText + "...";
+            mensajeDiv.innerText = "⏳ Registrando " + decodedText + "...";
 
-            const horaInicioInput = document.getElementById("hora-inicio") ? document.getElementById("hora-inicio").value : "08:00";
+            const horaInicioInput = document.getElementById("hora-inicio").value;
             const url = `${SCRIPT_URL}?accion=registrarAsistencia&matricula=${encodeURIComponent(decodedText)}&materia=${encodeURIComponent(materiaSeleccionada)}&horaInicio=${encodeURIComponent(horaInicioInput)}`;
 
-            fetch(url)
-            .then(response => response.json())
-            .then(resultado => {
-                if (resultado.status === 'success') {
-                    mensajeDiv.style.color = "#2e7d32";
-                    mensajeDiv.innerText = `✅ ${resultado.estatusRegistro.toUpperCase()}: ${resultado.alumno}`;
-                } else {
-                    mensajeDiv.style.color = "#d9534f";
-                    mensajeDiv.innerText = `⚠️ ${resultado.mensaje}`;
-                }
-
-                setTimeout(() => {
-                    mensajeDiv.innerText = "";
-                    escaneando = false;
-                }, 3000);
-            })
-            .catch(error => {
-                console.error("Error al registrar:", error);
-                mensajeDiv.innerText = "❌ Error de conexión.";
-                escaneando = false;
-            });
+            fetch(url).then(r => r.json()).then(resultado => {
+                mensajeDiv.style.color = resultado.status === 'success' ? "#2e7d32" : "#d9534f";
+                mensajeDiv.innerText = resultado.status === 'success' ? `✅ ${resultado.estatusRegistro.toUpperCase()}: ${resultado.alumno}` : `⚠️ ${resultado.mensaje}`;
+                setTimeout(() => { mensajeDiv.innerText = ""; escaneando = false; }, 3000);
+            }).catch(() => { mensajeDiv.innerText = "❌ Error de conexión."; escaneando = false; });
         }
 
         function fijarHoraActual() {
             const inputHora = document.getElementById("hora-inicio");
-            if (!inputHora) return;
             const ahora = new Date();
             inputHora.value = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
         }
 
         function encenderEscaner() {
             if (html5QrcodeScanner !== null) return;
-            if (typeof Html5QrcodeScanner === 'undefined') {
-                setTimeout(encenderEscaner, 200);
-                return;
-            }
-            try {
-                html5QrcodeScanner = new Html5QrcodeScanner(
-                    "reader",
-                    { fps: 10, qrbox: { width: 220, height: 220 }, rememberLastUsedCamera: true },
-                    false
-                );
-                html5QrcodeScanner.render(onScanSuccess, () => {});
-            } catch (e) {
-                console.error("Error escáner:", e);
-            }
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 220, height: 220 } }, false);
+            html5QrcodeScanner.render(onScanSuccess, () => {});
         }
 
-        // ==========================================
-        // 4. TABLA DE REPORTES
-        // ==========================================
         let datosReporteGlobal = [];
 
         async function cargarDatosReporte() {
             const tbody = document.getElementById("tbody-reporte");
-            if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="10" style="padding: 15px;">⏳ Cargando datos desde Google Sheets...</td></tr>`;
-            }
-
+            tbody.innerHTML = `<tr><td colspan="10" style="padding: 15px;">⏳ Cargando datos...</td></tr>`;
             try {
                 const response = await fetch(`${SCRIPT_URL}?accion=obtenerReporte`);
                 datosReporteGlobal = await response.json();
                 poblarFiltroMaterias(datosReporteGlobal);
                 filtrarReporte();
             } catch (error) {
-                console.error("Error al cargar reporte:", error);
-                if (tbody) {
-                    tbody.innerHTML = `<tr><td colspan="10" style="color: red; padding: 15px;">❌ Error al conectar con Google Sheets.</td></tr>`;
-                }
+                tbody.innerHTML = `<tr><td colspan="10" style="color: red; padding: 15px;">❌ Error de conexión.</td></tr>`;
             }
         }
 
         function poblarFiltroMaterias(datos) {
             const selectFiltro = document.getElementById("filtro-materia");
-            if (!selectFiltro) return;
-
-            const materiasUnicas = [...new Set(datos.map(item => item.materia))].filter(Boolean);
+            const materiasUnicas = [...new Set(datos.map(i => i.materia))].filter(Boolean);
             selectFiltro.innerHTML = '<option value="TODAS">-- Mostrar Todas las Materias --</option>';
-            
-            materiasUnicas.forEach(materia => {
+            materiasUnicas.forEach(m => {
                 const option = document.createElement("option");
-                option.value = materia;
-                option.textContent = materia;
+                option.value = m; option.textContent = m;
                 selectFiltro.appendChild(option);
             });
         }
@@ -878,19 +598,10 @@
         function filtrarReporte() {
             const selectFiltro = document.getElementById("filtro-materia");
             const tbody = document.getElementById("tbody-reporte");
-            if (!tbody || !selectFiltro) return;
-            
             const materiaSeleccionada = selectFiltro.value;
             tbody.innerHTML = "";
 
-            const datosFiltrados = materiaSeleccionada === "TODAS" 
-                ? datosReporteGlobal 
-                : datosReporteGlobal.filter(item => item.materia === materiaSeleccionada);
-
-            if (datosFiltrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" style="padding: 15px;">No hay alumnos registrados.</td></tr>`;
-                return;
-            }
+            const datosFiltrados = materiaSeleccionada === "TODAS" ? datosReporteGlobal : datosReporteGlobal.filter(i => i.materia === materiaSeleccionada);
 
             datosFiltrados.forEach((alumno, index) => {
                 const tr = document.createElement("tr");
@@ -903,67 +614,33 @@
                     <td>${alumno.asistencias}</td>
                     <td>${alumno.retardos}</td>
                     <td>${alumno.faltas}</td>
-                    <td>${alumno.justificados}</td>
+                    <td><strong>${alumno.justificados}</strong></td>
                     <td><strong>${alumno.porcentaje}</strong></td>
                     <td><span class="badge-estado ${estatusObj.clase}">${estatusObj.texto}</span></td>
                     <td>
-                        <button class="btn-accion" onclick="imprimirCartaIndividual(${index})">📄 Notificación</button>
+                        <button class="btn-accion btn-justificar" onclick="solicitarJustificante(${index})">+ Justificar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // ==========================================
-        // 5. CARTA/REPORTES INDIVIDUALES
-        // ==========================================
-        function imprimirCartaIndividual(index) {
-            const alumno = datosReporteGlobal[index];
-            if (!alumno) return;
-
-            const estatusObj = evaluarEstatus(alumno.porcentaje);
-            const fechaHoy = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-
-            document.getElementById("doc-fecha").innerText = fechaHoy;
-            document.getElementById("doc-nombre").innerText = alumno.nombre;
-            document.getElementById("doc-matricula").innerText = alumno.matricula;
-            document.getElementById("doc-materia").innerText = alumno.materia || 'General';
-            
-            document.getElementById("doc-asist").innerText = alumno.asistencias;
-            document.getElementById("doc-ret").innerText = alumno.retardos;
-            document.getElementById("doc-faltas").innerText = alumno.faltas;
-            document.getElementById("doc-just").innerText = alumno.justificados;
-            document.getElementById("doc-porcentaje").innerText = alumno.porcentaje;
-            document.getElementById("doc-estatus").innerText = estatusObj.texto.toUpperCase();
-
-            window.print();
-        }
-
-        // ==========================================
-        // 6. ANIMACIÓN DE MARIPOSAS & ARRANQUE GLOBAL
-        // ==========================================
+        // Mariposas decorativas
         (function arrancarMariposas() {
             function crearMariposa() {
                 var container = document.getElementById('magic-bg');
                 if (!container) return;
-
                 var el = document.createElement('div');
-                var iconos = ['🦋', '✨', '🌸', '💖', '🧪', '🔬', '🥼', '💕'];
-                var esMariposa = Math.random() > 0.4;
-                
-                el.className = esMariposa ? 'butterfly' : 'sparkle';
+                var iconos = ['🦋', '✨', '🌸', '💖', '🧪'];
+                el.className = 'butterfly';
                 el.innerText = iconos[Math.floor(Math.random() * iconos.length)];
                 el.style.left = (Math.random() * 92 + 3) + 'vw';
                 el.style.animationDuration = (Math.random() * 4 + 6) + 's';
                 el.style.fontSize = (Math.random() * 10 + 18) + 'px';
-                
                 container.appendChild(el);
-
-                setTimeout(function() { el.remove(); }, 9000);
+                setTimeout(() => el.remove(), 9000);
             }
-
-            for (var i = 0; i < 3; i++) { setTimeout(crearMariposa, i * 300); }
-            setInterval(crearMariposa, 1100);
+            setInterval(crearMariposa, 1200);
         })();
 
         window.addEventListener('DOMContentLoaded', () => {
