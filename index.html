@@ -172,7 +172,7 @@
             <div style="font-size: 38px;">🔒</div>
             <h3>¡Bienvenida, Adriana!</h3>
             <p>Listos para la clase de hoy 💖</p>
-            <input type="password" id="input-clave" placeholder="••••" onkeypress="evaluarTecla(event)">
+            <input type="password" id="input-clave" placeholder="••••" autocomplete="off" onkeypress="evaluarTecla(event)">
             <button class="btn-chip" style="width: 100%; margin-bottom: 8px;" onclick="desbloquearSistema()">Desbloquear con Clave</button>
             <button id="btn-huella" class="btn-chip btn-bio" onclick="desbloquearConBiometrico()">☝️ Desbloquear con Huella</button>
             <div id="err-clave" style="color: #c62828; font-size: 12px; font-weight: bold; margin-top: 10px; display: none;">⚠️ Clave o huella incorrecta</div>
@@ -184,7 +184,7 @@
             <div style="font-size: 38px;">📝🔒</div>
             <h3>Autorizar Justificante</h3>
             <p id="modal-justificante-txt">Confirma tu identidad para autorizar la falta.</p>
-            <input type="password" id="input-clave-justificante" placeholder="••••" onkeypress="evaluarTeclaJustificante(event)">
+            <input type="password" id="input-clave-justificante" placeholder="••••" autocomplete="off" onkeypress="evaluarTeclaJustificante(event)">
             <div class="btn-modal-group">
                 <button class="btn-chip" style="width: 100%;" onclick="confirmarJustificanteClave()">Confirmar con Clave</button>
                 <button id="btn-huella-justificante" class="btn-chip btn-bio" style="margin-top: 0;" onclick="confirmarJustificanteBiometrico()">☝️ Validar con Huella</button>
@@ -268,6 +268,8 @@
 
         let ultimoMatriculaEscaneada = "";
         let ultimoTiempoEscaneo = 0;
+        let datosReporteGlobal = [];
+        let datosFiltradosGlobal = [];
 
         async function registrarBiometrico() {
             if (!window.PublicKeyCredential) return alert("Tu dispositivo no soporta biometría.");
@@ -317,10 +319,11 @@
         function bloquearSistemaManualmente() {
             document.getElementById("pantalla-bloqueo").style.display = "flex";
             document.getElementById("input-clave").value = "";
+            setTimeout(() => document.getElementById("input-clave").focus(), 100);
         }
 
         function solicitarJustificante(index) {
-            const alumno = datosReporteGlobal[index];
+            const alumno = datosFiltradosGlobal[index];
             if (!alumno) return;
             alumnoPendienteJustificar = alumno;
             document.getElementById("modal-justificante-txt").innerText = `Confirma tu identidad para registrar justificante a:\n${alumno.nombre}`;
@@ -328,6 +331,7 @@
             document.getElementById("err-clave-justificante").style.display = "none";
             document.getElementById("btn-huella-justificante").style.display = localStorage.getItem("biometrico_activado") ? "inline-flex" : "none";
             document.getElementById("modal-justificante").style.display = "flex";
+            setTimeout(() => document.getElementById("input-clave-justificante").focus(), 100);
         }
 
         function cerrarModalJustificante() {
@@ -451,8 +455,6 @@
             html5QrcodeScanner.render(onScanSuccess, () => {});
         }
 
-        let datosReporteGlobal = [];
-
         async function cargarDatosReporte() {
             const tbody = document.getElementById("tbody-reporte");
             tbody.innerHTML = `<tr><td colspan="10" style="padding: 15px;">⏳ Cargando datos...</td></tr>`;
@@ -468,13 +470,19 @@
 
         function poblarFiltroMaterias(datos) {
             const selectFiltro = document.getElementById("filtro-materia");
+            const valorPrevio = selectFiltro.value;
             const materiasUnicas = [...new Set(datos.map(i => i.materia))].filter(Boolean);
+            
             selectFiltro.innerHTML = '<option value="TODAS">-- Mostrar Todas las Materias --</option>';
             materiasUnicas.forEach(m => {
                 const option = document.createElement("option");
                 option.value = m; option.textContent = m;
                 selectFiltro.appendChild(option);
             });
+
+            if (materiasUnicas.includes(valorPrevio)) {
+                selectFiltro.value = valorPrevio;
+            }
         }
 
         function filtrarReporte() {
@@ -483,9 +491,16 @@
             const materiaSeleccionada = selectFiltro.value;
             tbody.innerHTML = "";
 
-            const datosFiltrados = materiaSeleccionada === "TODAS" ? datosReporteGlobal : datosReporteGlobal.filter(i => i.materia === materiaSeleccionada);
+            datosFiltradosGlobal = materiaSeleccionada === "TODAS" 
+                ? datosReporteGlobal 
+                : datosReporteGlobal.filter(i => i.materia === materiaSeleccionada);
 
-            datosFiltrados.forEach((alumno, index) => {
+            if (datosFiltradosGlobal.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="padding: 15px;">No se encontraron registros.</td></tr>`;
+                return;
+            }
+
+            datosFiltradosGlobal.forEach((alumno, index) => {
                 const tr = document.createElement("tr");
                 const estatusObj = evaluarEstatus(alumno.porcentaje);
 
@@ -529,6 +544,7 @@
             cargarMaterias();
             encenderEscaner();
             reiniciarTemporizadorInactividad();
+            document.getElementById("input-clave").focus();
         });
     </script>
 </body>
