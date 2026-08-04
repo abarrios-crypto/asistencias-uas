@@ -47,8 +47,8 @@
         .vista { display: none; width: 100%; }
         .vista-activa { display: block !important; }
 
-        /* --- PANTALLA DE BLOQUEO --- */
-        #pantalla-bloqueo {
+        /* --- PANTALLA DE BLOQUEO Y MODALES --- */
+        #pantalla-bloqueo, .modal-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
@@ -61,7 +61,7 @@
             padding: 15px;
         }
 
-        .box-bloqueo {
+        .box-bloqueo, .modal-card {
             background: #ffffff;
             border-radius: 28px;
             padding: 35px 25px;
@@ -72,24 +72,30 @@
             border: 2px solid var(--dorado-soft);
         }
 
-        .box-bloqueo h3 {
+        .box-bloqueo h3, .modal-card h3 {
             font-family: 'Playfair Display', serif;
             color: var(--verde-salvia);
             margin: 10px 0 5px 0;
             font-size: 22px;
         }
 
-        .box-bloqueo p {
+        .box-bloqueo p, .modal-card p {
             color: var(--texto-suave);
             font-size: 13px;
             margin-bottom: 18px;
         }
 
-        .box-bloqueo input {
+        .box-bloqueo input, .modal-card input[type="password"] {
             text-align: center;
             letter-spacing: 4px;
             font-size: 18px;
             margin-bottom: 15px;
+        }
+
+        .btn-modal-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         /* --- MARIPOSAS FLOTANTES --- */
@@ -271,11 +277,11 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE BLOQUEO (CON HUELLA DACTILAR) -->
+    <!-- PANTALLA DE BLOQUEO PRINCIPAL -->
     <div id="pantalla-bloqueo">
         <div class="box-bloqueo">
             <div style="font-size: 38px;">🔒</div>
-            <h3>¡Bienvenida, Adriana¡</h3>
+            <h3>¡Bienvenida, Adriana!</h3>
             <p>Listos para la clase de hoy 💖</p>
             
             <input type="password" id="input-clave" placeholder="••••" onkeypress="evaluarTecla(event)">
@@ -285,6 +291,27 @@
             
             <div id="err-clave" style="color: #c62828; font-size: 12px; font-weight: bold; margin-top: 10px; display: none;">
                 ⚠️ Autenticación no válida
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE SEGURIDAD PARA AUTORIZAR JUSTIFICANTE -->
+    <div id="modal-justificante" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div style="font-size: 38px;">📝🔒</div>
+            <h3>Autorizar Justificante</h3>
+            <p id="modal-justificante-txt">Confirma tu identidad para autorizar la falta.</p>
+            
+            <input type="password" id="input-clave-justificante" placeholder="••••" onkeypress="evaluarTeclaJustificante(event)">
+            
+            <div class="btn-modal-group">
+                <button class="btn-chip" style="width: 100%;" onclick="confirmarJustificanteClave()">Confirmar con Clave</button>
+                <button id="btn-huella-justificante" class="btn-chip btn-bio" style="margin-top: 0;" onclick="confirmarJustificanteBiometrico()">☝️ Validar con Huella</button>
+                <button class="btn-chip" style="background: transparent; border-color: #ccc; color: #777; margin-top: 4px;" onclick="cerrarModalJustificante()">Cancelar</button>
+            </div>
+            
+            <div id="err-clave-justificante" style="color: #c62828; font-size: 12px; font-weight: bold; margin-top: 10px; display: none;">
+                ⚠️ Clave o huella incorrecta
             </div>
         </div>
     </div>
@@ -367,6 +394,7 @@
         const CLAVE_ACCESO = "Nsktinuviel88!"; 
         const MINUTOS_INACTIVIDAD = 3;
         let temporizadorInactividad;
+        let alumnoPendienteJustificar = null;
 
         // ==========================================
         // ☝️ BIOMETRÍA Y HUELLA DACTILAR (WEBAUTHN)
@@ -455,21 +483,75 @@
         }
 
         // ==========================================
-        // 📊 JUSTIFICANTES DESDE LA INTERFAZ
+        // 📊 JUSTIFICANTES SEGURAS (MODAL + HUELLA)
         // ==========================================
-        async function solicitarJustificante(index) {
+        function solicitarJustificante(index) {
             const alumno = datosReporteGlobal[index];
             if (!alumno) return;
 
-            // Confirmación de seguridad previa
-            const confirmacion = confirm(`¿Deseas agregar una falta JUSTIFICADA a:\n${alumno.nombre} (${alumno.materia})?`);
-            if (!confirmacion) return;
+            alumnoPendienteJustificar = alumno;
 
-            const claveIngresada = prompt("Ingresa tu clave docente para autorizar el justificante:");
-            if (claveIngresada !== CLAVE_ACCESO) {
-                alert("❌ Clave incorrecta. Acción cancelada.");
+            // Personalizar texto del modal
+            document.getElementById("modal-justificante-txt").innerText = `Confirma tu identidad para registrar la falta JUSTIFICADA a:\n${alumno.nombre}`;
+            document.getElementById("input-clave-justificante").value = "";
+            document.getElementById("err-clave-justificante").style.display = "none";
+
+            // Mostrar u ocultar el botón de huella según disponibilidad registrada
+            const btnHuella = document.getElementById("btn-huella-justificante");
+            if (localStorage.getItem("biometrico_activado")) {
+                btnHuella.style.display = "inline-flex";
+            } else {
+                btnHuella.style.display = "none";
+            }
+
+            document.getElementById("modal-justificante").style.display = "flex";
+            setTimeout(() => document.getElementById("input-clave-justificante").focus(), 100);
+        }
+
+        function cerrarModalJustificante() {
+            document.getElementById("modal-justificante").style.display = "none";
+            alumnoPendienteJustificar = null;
+        }
+
+        function evaluarTeclaJustificante(e) {
+            if (e.key === 'Enter') confirmarJustificanteClave();
+        }
+
+        function confirmarJustificanteClave() {
+            const claveInput = document.getElementById("input-clave-justificante").value;
+            if (claveInput === CLAVE_ACCESO) {
+                ejecutarRegistroJustificante();
+            } else {
+                document.getElementById("err-clave-justificante").style.display = "block";
+            }
+        }
+
+        async function confirmarJustificanteBiometrico() {
+            if (!localStorage.getItem("biometrico_activado")) {
+                alert("Primero debes vincular tu huella desde el menú principal.");
                 return;
             }
+
+            try {
+                const publicKeyOptions = {
+                    challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+                    timeout: 60000
+                };
+
+                const credential = await navigator.credentials.get({ publicKey: publicKeyOptions });
+                if (credential) {
+                    ejecutarRegistroJustificante();
+                }
+            } catch (err) {
+                console.error("Error al validar huella en justificante:", err);
+                document.getElementById("err-clave-justificante").style.display = "block";
+            }
+        }
+
+        async function ejecutarRegistroJustificante() {
+            if (!alumnoPendienteJustificar) return;
+            const alumno = alumnoPendienteJustificar;
+            cerrarModalJustificante();
 
             try {
                 const url = `${SCRIPT_URL}?accion=registrarJustificante&matricula=${encodeURIComponent(alumno.matricula)}&materia=${encodeURIComponent(alumno.materia)}`;
